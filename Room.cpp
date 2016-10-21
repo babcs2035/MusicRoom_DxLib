@@ -53,6 +53,11 @@ void Room_Init() {
 		FileRead_close(FP_comment);
 	}
 
+	for (int i = 0; i < MAX_MUSIC_NUM; ++i) {
+		if (music[i].image == 0) {
+			music[i].image = LoadGraph("data\\graph\\no image.png");
+		}
+	}
 	FileRead_close(FP_music_list);
 	G_main = LoadGraph("data\\graph\\main.png");
 }
@@ -69,13 +74,13 @@ void Room_Draw() {
 	DrawGraph(0, 0, G_main, TRUE);
 	for (int i = 0; i < 9; ++i) {
 		if (i < 4) {
-			DrawModiGraph(50 + i * 100, 50, 50 + i * 100 + 50, 100, 50 + i * 100 + 50, 200, 50 + i * 100, 250, music[i].image, TRUE);
+			DrawModiGraph(50 + i * 80, 50, 50 + i * 80 + 50, 100, 50 + i * 80 + 50, 200, 50 + i * 80, 250, music[i].image, TRUE);
 		}
 		else if (i == 4) {
-			DrawModiGraph(50 + i * 100, 50, 50 + i * 100 + 200, 50, 50 + i * 100 + 200, 250, 50 + i * 100, 50, music[i].image, TRUE);
+			DrawModiGraph(50 + i * 80, 50, 50 + i * 80 + 200, 50, 50 + i * 80 + 200, 250, 50 + i * 80, 50, music[i].image, TRUE);
 		}
 		else {
-			DrawModiGraph(50 + 4 * 100 + 200 - 50, 100, 50 + 4 * 100 + 200 - 50 + 50, 50, 50 + 4 * 100 + 200 - 50 + 50, 50 + 200, 50 + 4 * 100 + 200 - 50, 200, music[i].image, TRUE);
+			DrawModiGraph(50 + i * 80 + 200 - 50, 100, 50 + i * 80 + 200 - 50 + 50, 50, 50 + i * 80 + 200 - 50 + 50, 50 + 200, 50 + i * 80 + 200 - 50, 200, music[i].image, TRUE);
 		}
 	}
 }
