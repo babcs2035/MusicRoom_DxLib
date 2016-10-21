@@ -15,20 +15,20 @@ typedef struct Music_s{
 Music_data music[MAX_MUSIC_NUM];
 int G_main;
 int G_music[MAX_MUSIC_NUM];
-char music_num[1];
+char music_num[2];
 
 // èâä˙âª
 void Room_Init() {
-	FILE *fp_list;
 	TCHAR Gfilename[50];
 	bool flag = false;
-	if ((fp_list = fopen("data\\list.txt", "r")) == NULL){ printfDx("FILE READ ERROR (list.txt)\n"); }
-	fgets(music_num, sizeof(music_num), fp_list);
-	for (int i = 0; i < atoi(music_num); i++) {
-		fgets(music[i].name, sizeof(music[i].name), fp_list);
+	int FP_music_list = FileRead_open("data\\music_list.txt");
+	FileRead_gets(music_num, sizeof(music_num), FP_music_list);
+	for (int i = 0; i < atoi(music_num); ++i) {
+		FileRead_gets(music[i].name, sizeof(music[i].name), FP_music_list);
 		music[i].name[strlen(music[i].name) - 1] = '\0';
 		sprintfDx(Gfilename, "data\\graph\\%s.png", music[i].name);
 		music[i].image = LoadGraph(Gfilename);
+		if (music[i].image == -1) { music[i].image = LoadGraph("data\\graph\\no image.png", TRUE); }
 		sprintf(Gfilename, "data\\comment\\%s.txt", music[i].name);
 		int FP_comment = FileRead_open(Gfilename);
 		FileRead_gets(music[i].creater, sizeof(music[i].creater), FP_comment);
@@ -53,7 +53,7 @@ void Room_Init() {
 		FileRead_close(FP_comment);
 	}
 
-	fclose(fp_list);
+	FileRead_close(FP_music_list);
 	G_main = LoadGraph("data\\graph\\main.png");
 }
 
