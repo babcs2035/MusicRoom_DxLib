@@ -72,7 +72,7 @@ void Room_Draw() {
 			DrawModiGraph(50 + i * 100, 50, 50 + i * 100 + 50, 100, 50 + i * 100 + 50, 200, 50 + i * 100, 250, music[i].image, TRUE);
 		}
 		else if (i == 4) {
-
+			DrawModiGraph(50 + i * 100, 50, 50 + i * 100 + 200, 50, 50 + i * 100 + 200, 250, 50 + i * 100, 50, music[i].image, TRUE);
 		}
 		else {
 
