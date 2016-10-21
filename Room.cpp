@@ -68,6 +68,14 @@ void Room_Draw() {
 	// ‰æ‘œ
 	DrawGraph(0, 0, G_main, TRUE);
 	for (int i = 0; i < 9; ++i) {
-		
+		if (i < 4) {
+
+		}
+		else if (i == 4) {
+
+		}
+		else {
+
+		}
 	}
 }
