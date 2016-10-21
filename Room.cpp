@@ -1,6 +1,6 @@
 #include "DxLib.h"
 #include <string.h>
-#define TOTAL_MUSIC_NUM			3
+#define MAX_MUSIC_NUM			50
 #define MUSIC_COMMENT_HEIGHT	15
 #define MUSIC_COMMENT_WEIGHT	25
 
@@ -12,18 +12,19 @@ typedef struct Music_s{
 	char comment[MUSIC_COMMENT_HEIGHT][MUSIC_COMMENT_WEIGHT];
 }Music_data;
 
-Music_data music[TOTAL_MUSIC_NUM];
+Music_data music[MAX_MUSIC_NUM];
 int G_main;
-int G_music[TOTAL_MUSIC_NUM];
+int G_music[MAX_MUSIC_NUM];
+char music_num[1];
 
 // èâä˙âª
 void Room_Init() {
 	FILE *fp_list;
 	TCHAR Gfilename[50];
 	bool flag = false;
-
 	if ((fp_list = fopen("data\\list.txt", "r")) == NULL){ printfDx("FILE READ ERROR (list.txt)\n"); }
-	for (int i = 0; i < TOTAL_MUSIC_NUM; i++){
+	fgets(music_num, sizeof(music_num), fp_list);
+	for (int i = 0; i < atoi(music_num); i++) {
 		fgets(music[i].name, sizeof(music[i].name), fp_list);
 		music[i].name[strlen(music[i].name) - 1] = '\0';
 		sprintfDx(Gfilename, "data\\graph\\%s.png", music[i].name);
