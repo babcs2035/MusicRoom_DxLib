@@ -5,7 +5,7 @@
 #define MUSIC_COMMENT_WEIGHT	25
 
 // ƒOƒ[ƒoƒ‹•Ï”
-typedef struct Music_s{
+typedef struct Music_s {
 	char name[50];
 	int image;
 	char creater[15];
@@ -32,18 +32,18 @@ void Room_Init() {
 		sprintf(Gfilename, "data\\comment\\%s.txt", music[i].name);
 		int FP_comment = FileRead_open(Gfilename);
 		FileRead_gets(music[i].creater, sizeof(music[i].creater), FP_comment);
-		for (int j = 0; FileRead_eof(FP_comment) == FALSE && j < sizeof(music[i].comment[j]); ++j){
+		for (int j = 0; FileRead_eof(FP_comment) == FALSE && j < sizeof(music[i].comment[j]); ++j) {
 			static_assert(sizeof(music[i].comment[j]) == 25, "");
 			music[i].comment[j][23] = '\0';
-			if (flag == false){
+			if (flag == false) {
 				FileRead_gets(music[i].comment[j], sizeof(music[i].comment[j]), FP_comment);
 			}
-			if (flag == true){
+			if (flag == true) {
 				FileRead_gets(&music[i].comment[j][1], sizeof(music[i].comment[j]) - 1, FP_comment);
 			}
 			char temp[3] = { music[i].comment[j][23], '\0', '\0' };
-			if (MultiByteCharCheck(temp, DX_CHARSET_SHFTJIS) == TRUE){
-				if (j < MUSIC_COMMENT_HEIGHT - 1){
+			if (MultiByteCharCheck(temp, DX_CHARSET_SHFTJIS) == TRUE) {
+				if (j < MUSIC_COMMENT_HEIGHT - 1) {
 					music[i].comment[j + 1][0] = music[i].comment[j][23];
 					music[i].comment[j][23] = '\0';
 					flag = true;
