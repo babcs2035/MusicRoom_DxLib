@@ -6,7 +6,7 @@
 
 // ƒOƒ[ƒoƒ‹•Ï”
 typedef struct Music_s {
-	char name[50];
+	char name[100];
 	int image;
 	char creater[15];
 	char comment[MUSIC_COMMENT_HEIGHT][MUSIC_COMMENT_WEIGHT];
@@ -15,7 +15,7 @@ typedef struct Music_s {
 Music_data music[MAX_MUSIC_NUM];
 int G_main;
 int G_music[MAX_MUSIC_NUM];
-char music_num[2];
+char music_num[5];
 
 // ‰Šú‰»
 void Room_Init() {
@@ -74,13 +74,13 @@ void Room_Draw() {
 	DrawGraph(0, 0, G_main, TRUE);
 	for (int i = 0; i < 9; ++i) {
 		if (i < 4) {
-			DrawModiGraph(50 + i * 100, 50, 50 + i * 100 + 50, 100, 50 + i * 100 + 50, 200, 50 + i * 100, 250, music[i].image, TRUE);
+			DrawModiGraph(25 + i * 50, 25, 25 + i * 50 + 50, 75, 25 + i * 50 + 50, 175, 25 + i * 50, 225, music[i].image, TRUE);
 		}
 		else if (i == 4) {
-			DrawModiGraph(50 + i * 100, 50, 50 + i * 100 + 200, 50, 50 + i * 100 + 200, 250, 50 + i * 100, 50, music[i].image, TRUE);
+			DrawModiGraph(25 + i * 50, 25, 25 + i * 50 + 200, 25, 25 + i * 50 + 200, 225, 25 + i * 50, 225, music[i].image, TRUE);
 		}
 		else {
-			DrawModiGraph(50 + 4 * 100 + 200 - 50, 100, 50 + 4 * 100 + 200 - 50 + 50, 50, 50 + 4 * 100 + 200 - 50 + 50, 50 + 200, 50 + 4 * 100 + 200 - 50, 200, music[i].image, TRUE);
+			DrawModiGraph(25 + i * 50 + 200 - 50, 75, 25 + i * 50 + 200 - 50 + 50, 25, 25 + i * 50 + 200 - 50 + 50, 25 + 200, 25 + i * 50 + 200 - 50, 175, music[i].image, TRUE);
 		}
 	}
 }
