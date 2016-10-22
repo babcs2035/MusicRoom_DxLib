@@ -52,6 +52,12 @@ void Room_Init() {
 		}
 		FileRead_close(FP_comment);
 	}
+
+	for (int i = 0; i < MAX_MUSIC_NUM; ++i) {
+		if (music[i].image == 0) {
+			music[i].image = LoadGraph("data\\graph\\no image.png");
+		}
+	}
 	FileRead_close(FP_music_list);
 	G_main = LoadGraph("data\\graph\\main.png");
 }
