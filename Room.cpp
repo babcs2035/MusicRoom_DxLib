@@ -25,7 +25,7 @@ void Room_Init() {
 	FileRead_gets(music_num, sizeof(music_num), FP_music_list);
 	for (int i = 0; i < atoi(music_num); ++i) {
 		FileRead_gets(music[i].name, sizeof(music[i].name), FP_music_list);
-		music[i].name[strlen(music[i].name) - 1] = '\0';
+		// music[i].name[strlen(music[i].name) - 1] = '\0';
 		sprintfDx(Gfilename, "data\\graph\\%s.png", music[i].name);
 		music[i].image = LoadGraph(Gfilename);
 		if (music[i].image == -1) { music[i].image = LoadGraph("data\\graph\\no image.png", TRUE); }
