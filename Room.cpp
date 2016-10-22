@@ -52,7 +52,6 @@ void Room_Init() {
 		}
 		FileRead_close(FP_comment);
 	}
-
 	FileRead_close(FP_music_list);
 	G_main = LoadGraph("data\\graph\\main.png");
 }
