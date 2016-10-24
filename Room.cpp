@@ -72,9 +72,11 @@ void Room_Init() {
 void Room_Update() {
 	if (Keyboard_Get(KEY_INPUT_LEFT) != 0) {
 		NowMusicNum--;
+		ChangeImage_flag = true;
 	}
 	else if (Keyboard_Get(KEY_INPUT_RIGHT) != 0) {
 		NowMusicNum++;
+		ChangeImage_flag = true;
 	}
 }
 
@@ -83,7 +85,10 @@ void Room_Draw() {
 
 	// ‰æ‘œ
 	DrawGraph(0, 0, G_main, TRUE);
-	if (ChangeImage_flag == false) {
+	if (ChangeImage_flag == true) {
+		ChangeMusicImageGraph();
+	}
+	else if (ChangeImage_flag == false) {
 		for (int i = 0; i < 9; ++i) {
 			if (i < 4) {
 				DrawModiGraph(25 + i * 50, 25, 25 + i * 50 + 50, 75, 25 + i * 50 + 50, 175, 25 + i * 50, 225, music[abs((i + (NowMusicNum % 9)) % 9)].image, TRUE);
