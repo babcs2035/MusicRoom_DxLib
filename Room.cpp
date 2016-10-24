@@ -1,4 +1,5 @@
 #include "DxLib.h"
+#include "Keyboard.h"
 #include <string.h>
 #define MAX_MUSIC_NUM			50
 #define MUSIC_COMMENT_HEIGHT	15
@@ -15,7 +16,9 @@ typedef struct Music_s {
 Music_data music[MAX_MUSIC_NUM];
 int G_main;
 int G_music[MAX_MUSIC_NUM];
+int NowMusicNum = 0;
 char music_num[5];
+bool ChangeImage_flag = false;
 
 // èâä˙âª
 void Room_Init() {
@@ -25,7 +28,7 @@ void Room_Init() {
 	FileRead_gets(music_num, sizeof(music_num), FP_music_list);
 	for (int i = 0; i < atoi(music_num); ++i) {
 		FileRead_gets(music[i].name, sizeof(music[i].name), FP_music_list);
-		// music[i].name[strlen(music[i].name) - 1] = '\0';
+		music[i].name[strlen(music[i].name)] = '\0';
 		sprintfDx(Gfilename, "data\\graph\\%s.png", music[i].name);
 		music[i].image = LoadGraph(Gfilename);
 		if (music[i].image == -1) { music[i].image = LoadGraph("data\\graph\\no image.png", TRUE); }
@@ -64,7 +67,12 @@ void Room_Init() {
 
 // çXêV
 void Room_Update() {
-
+	if (Keyboard_Get(KEY_INPUT_LEFT) != 0) {
+		NowMusicNum--;
+	}
+	else if (Keyboard_Get(KEY_INPUT_RIGHT) != 0) {
+		NowMusicNum++;
+	}
 }
 
 // ï`âÊ
@@ -74,13 +82,13 @@ void Room_Draw() {
 	DrawGraph(0, 0, G_main, TRUE);
 	for (int i = 0; i < 9; ++i) {
 		if (i < 4) {
-			DrawModiGraph(25 + i * 50, 25, 25 + i * 50 + 50, 75, 25 + i * 50 + 50, 175, 25 + i * 50, 225, music[i].image, TRUE);
+			DrawModiGraph(25 + i * 50, 25, 25 + i * 50 + 50, 75, 25 + i * 50 + 50, 175, 25 + i * 50, 225, music[abs((i + (NowMusicNum % 9)) % 9)].image, TRUE);
 		}
 		else if (i == 4) {
-			DrawModiGraph(25 + i * 50, 25, 25 + i * 50 + 200, 25, 25 + i * 50 + 200, 225, 25 + i * 50, 225, music[i].image, TRUE);
+			DrawModiGraph(25 + i * 50, 25, 25 + i * 50 + 200, 25, 25 + i * 50 + 200, 225, 25 + i * 50, 225, music[abs((i + (NowMusicNum % 9)) % 9)].image, TRUE);
 		}
 		else {
-			DrawModiGraph(25 + i * 50 + 200 - 50, 75, 25 + i * 50 + 200 - 50 + 50, 25, 25 + i * 50 + 200 - 50 + 50, 25 + 200, 25 + i * 50 + 200 - 50, 175, music[i].image, TRUE);
+			DrawModiGraph(25 + i * 50 + 200 - 50, 75, 25 + i * 50 + 200 - 50 + 50, 25, 25 + i * 50 + 200 - 50 + 50, 25 + 200, 25 + i * 50 + 200 - 50, 175, music[abs((i + (NowMusicNum % 9)) % 9)].image, TRUE);
 		}
 	}
 }
