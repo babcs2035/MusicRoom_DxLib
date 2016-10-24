@@ -121,5 +121,5 @@ void ChangeMusicImageGraph() {
 			DrawModiGraph(25 + i * 50 + ChangeImage_frame, 75, 25 + i * 50 + 50 + ChangeImage_frame, 25, 25 + i * 50 + 50 + ChangeImage_frame, 25 + 200, 25 + i * 50 + ChangeImage_frame, 175, music[abs((i + (NowMusicNum % 9)) % 9)].image, TRUE);
 		}
 	}
-	if (ChangeImage_frame > 50) { ChangeImage_flag = false; }
+	if (ChangeImage_frame > 50) { ChangeImage_flag = false; ChangeImage_frame = 0; }
 }
