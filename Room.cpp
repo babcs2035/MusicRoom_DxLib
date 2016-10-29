@@ -23,6 +23,7 @@ int ChangeImage_frame = 0;
 int FirstTime, NowTime;
 char music_num[5];
 bool ChangeImage_flag = false;
+int ChangeImage_for = 0;
 
 // 初期化
 void Room_Init() {
@@ -74,11 +75,11 @@ void Room_Init() {
 void Room_Update() {
 	NowTime = GetNowCount() - FirstTime;
 	if (Keyboard_Get(KEY_INPUT_LEFT) != 0 && ChangeImage_flag == false) {
-		NowMusicNum = (NowMusicNum - 1) % 9;
+		ChangeImage_for = 1;
 		ChangeImage_flag = true;
 	}
 	else if (Keyboard_Get(KEY_INPUT_RIGHT) != 0 && ChangeImage_flag == false) {
-		NowMusicNum = (NowMusicNum + 1) % 9;
+		ChangeImage_for = 2;
 		ChangeImage_flag = true;
 	}
 }
@@ -112,20 +113,30 @@ bool flag = true;
 // 音楽イメージ画像の変化描画
 void ChangeMusicImageGraph() {
 	if (flag == true) { ChangeImage_frame++; flag = false; }
-	else { flag = true; }
+	else if (NowTime % 10 == 0) { flag = true; }
+
 	for (int i = 0; i < 9; ++i) {
-		if (i != 0 && i < 3) {
+		if (i < 3) {
 			DrawModiGraph(25 + i * 50 + ChangeImage_frame, 25, 25 + i * 50 + 50 + ChangeImage_frame, 75, 25 + i * 50 + 50 + ChangeImage_frame, 175, 25 + i * 50 + ChangeImage_frame, 225, music[abs((i + (NowMusicNum % 9)) % 9)].image, TRUE);
 		}
 		else if (i == 3) {
-			DrawModiGraph(25 + i * 50, 25, 25 + i * 50 + 200, 25, 25 + i * 50 + 200, 225, 25 + i * 50, 225, music[abs((i + (NowMusicNum % 9)) % 9)].image, TRUE);
+			DrawModiGraph(25 + i * 50 + ChangeImage_frame, 25, 25 + i * 50 + 200 + ChangeImage_frame * 2, 25 - ChangeImage_frame, 25 + i * 50 + 200 + ChangeImage_frame * 2, 225 + ChangeImage_frame, 25 + i * 50 + ChangeImage_frame, 225, music[abs((i + (NowMusicNum % 9)) % 9)].image, TRUE);
 		}
 		else if (i == 4) {
-			DrawModiGraph(25 + i * 50, 25, 25 + i * 50 + 200, 25, 25 + i * 50 + 200, 225, 25 + i * 50, 225, music[abs((i + (NowMusicNum % 9)) % 9)].image, TRUE);
+			DrawModiGraph(25 + i * 50 + ChangeImage_frame * 2, 25, 25 + i * 50 + 200 + ChangeImage_frame, 25 + ChangeImage_frame, 25 + i * 50 + 200 + ChangeImage_frame, 225 - ChangeImage_frame, 25 + i * 50 + ChangeImage_frame * 2, 225 - ChangeImage_frame, music[abs((i + (NowMusicNum % 9)) % 9)].image, TRUE);
 		}
-		else if (4 < i&&i != 8) {
+		else if (i > 4) {
 			DrawModiGraph(25 + i * 50 + 200 - 50 + ChangeImage_frame, 75, 25 + i * 50 + 200 - 50 + 50 + ChangeImage_frame, 25, 25 + i * 50 + 200 - 50 + 50 + ChangeImage_frame, 25 + 200, 25 + i * 50 + 200 - 50 + ChangeImage_frame, 175, music[abs((i + (NowMusicNum % 9)) % 9)].image, TRUE);
 		}
 	}
-	if (ChangeImage_frame > 50) { ChangeImage_flag = false; ChangeImage_frame = 0; }
+	if (ChangeImage_frame > 50) {
+		ChangeImage_flag = false; ChangeImage_frame = 0;
+		if (ChangeImage_for == 1) {
+			NowMusicNum--;
+		}
+		else {
+			NowMusicNum++;
+		}
+		ChangeImage_for = 0;
+	}
 }
