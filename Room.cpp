@@ -177,16 +177,16 @@ void ChangeMusicImageGraph() {
 		int draw_x = DRAW_X_START_POINT + DRAW_X_DISTANCE * 2;
 		for (int i = 0; i < 7; ++i) {
 			if (i < 3) {
-				DrawMI_L(music[(i + NowMusicNum) % MusicNum].image, draw_x + ChangeImage_frame * 2);
+				DrawMI_L(music[(i + NowMusicNum) % MusicNum].image, draw_x + --ChangeImage_frame * 2);
 			}
 			else if (i == 3) {
-				DrawMI_L(music[(i + NowMusicNum) % MusicNum].image, draw_x + DRAW_X_DISTANCE * 2 / DRAW_FRAME_COST * ChangeImage_frame, -Y_DEFAULT_DIFF / DRAW_FRAME_COST * abs(ChangeImage_frame - 50), -(DRAW_WIDTH_L - DRAW_X_DISTANCE) / DRAW_FRAME_COST * ChangeImage_frame + 1);
+				DrawMI_L(music[(i + NowMusicNum) % MusicNum].image, draw_x + DRAW_X_DISTANCE * 2 / DRAW_FRAME_COST * --ChangeImage_frame, -Y_DEFAULT_DIFF / DRAW_FRAME_COST * abs(-ChangeImage_frame - 50), -(DRAW_WIDTH_L - DRAW_X_DISTANCE) / DRAW_FRAME_COST * -ChangeImage_frame + 1);
 			}
 			else if (i == 4) {
-				DrawMI_R(music[(i + NowMusicNum) % MusicNum].image, draw_x + DRAW_X_DISTANCE * 2 / DRAW_FRAME_COST * ChangeImage_frame, -Y_DEFAULT_DIFF / DRAW_FRAME_COST * ChangeImage_frame, -(DRAW_WIDTH_L - DRAW_X_DISTANCE) / DRAW_FRAME_COST * ChangeImage_frame);
+				DrawMI_R(music[(i + NowMusicNum) % MusicNum].image, draw_x + DRAW_X_DISTANCE * 2 / DRAW_FRAME_COST * -ChangeImage_frame, -Y_DEFAULT_DIFF / DRAW_FRAME_COST * -ChangeImage_frame, -(DRAW_WIDTH_L - DRAW_X_DISTANCE) / DRAW_FRAME_COST * -ChangeImage_frame);
 			}
 			else if (i > 4) {
-				DrawMI_R(music[(i + NowMusicNum) % MusicNum].image, draw_x + 150 + ChangeImage_frame * 2);
+				DrawMI_R(music[(i + NowMusicNum) % MusicNum].image, draw_x + 150 + -ChangeImage_frame * 2);
 			}
 			draw_x += DRAW_X_DISTANCE * 2;
 		}
