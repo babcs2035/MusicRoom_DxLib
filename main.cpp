@@ -5,8 +5,8 @@
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	ChangeWindowMode(TRUE);
 	SetMainWindowText("MusicRoom v1.0");
-	SetGraphMode(640, 480, 32);
-	SetWindowSize(640, 480);
+	SetGraphMode(640, 640, 32);
+	SetWindowSize(640, 640);
 	SetAlwaysRunFlag(TRUE);
 	SetWaitVSyncFlag(FALSE);
 	if (DxLib_Init() != 0) { return - 1; }
