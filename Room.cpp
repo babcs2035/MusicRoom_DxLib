@@ -5,10 +5,10 @@
 #define MUSIC_COMMENT_HEIGHT	15
 #define MUSIC_COMMENT_WEIGHT	25
 
-// ŠÖ”ƒvƒƒgƒ^ƒCƒvéŒ¾
+// é–¢æ•°ãƒ—ãƒ­ãƒˆã‚¿ã‚¤ãƒ—å®£è¨€
 void ChangeMusicImageGraph();
 
-// \‘¢‘Ì
+// æ§‹é€ ä½“
 typedef struct Music_s {
 	char name[100];
 	int image;
@@ -16,7 +16,7 @@ typedef struct Music_s {
 	char comment[MUSIC_COMMENT_HEIGHT][MUSIC_COMMENT_WEIGHT];
 }Music_data;
 
-// ƒOƒ[ƒoƒ‹•Ï”
+// ã‚°ãƒ­ãƒ¼ãƒãƒ«å¤‰æ•°
 Music_data music[MAX_LOAD_MUSIC];
 int G_main;
 int G_music[MAX_LOAD_MUSIC];
@@ -29,7 +29,7 @@ bool ChangeImage_flag = false;
 int ChangeImage_for = 0;
 int FrameNum = 0;
 
-// ‰Šú‰»
+// åˆæœŸåŒ–
 void Room_Init()
 {
 	FrameNum = 0;
@@ -72,7 +72,7 @@ void Room_Init()
 	FirstTime = GetNowCount();
 }
 
-// XV
+// æ›´æ–°
 void Room_Update()
 {
 	FrameNum++;
@@ -87,15 +87,15 @@ void Room_Update()
 	}
 }
 
-static const int DRAW_X_START_POINT = -75;						// ‰æ–ÊŠO‚©‚ç“oê‚³‚¹‚é
-static const int DRAW_HEIGHT = 200;								// ‰æ‘œ‚Ì‚‚³
-static const int DRAW_WIDTH_S = 50;								// ‰æ‘œ‚Ì•i¬‚³‚¢‚Ù‚¤j
-static const int DRAW_WIDTH_L = 200;							// ‰æ‘œ‚Ì•i‘å‚«‚¢‚Ù‚¤j
-static const int DRAW_Y_TOP = 25;								// y‚Ì•ÏŒ`iãj
-static const int DRAW_BOTTOM = DRAW_Y_TOP + DRAW_HEIGHT;		// y‚Ì•ÏŒ`i‰ºj
-static const int Y_DEFAULT_DIFF = 50;							// y‚Ì’¾‚Ýž‚Ý“x
-static const int DRAW_X_DISTANCE = 50;							// ‰æ‘œ‚ÆŽŸ‚Ì‰æ‘œ‚ÌxÀ•W‚ÌŠÔŠu
-static const int DRAW_FRAME_COST = 50;							// ‰½ƒtƒŒ[ƒ€‚©‚¯‚Ä‰æ‘œ‚ÌˆÚ“®E•ÏŒ`‚ðs‚¤‚©
+static const int DRAW_X_START_POINT = -75;						// ç”»é¢å¤–ã‹ã‚‰ç™»å ´ã•ã›ã‚‹
+static const int DRAW_HEIGHT = 200;								// ç”»åƒã®é«˜ã•
+static const int DRAW_WIDTH_S = 50;								// ç”»åƒã®å¹…ï¼ˆå°ã•ã„ã»ã†ï¼‰
+static const int DRAW_WIDTH_L = 200;							// ç”»åƒã®å¹…ï¼ˆå¤§ãã„ã»ã†ï¼‰
+static const int DRAW_Y_TOP = 25;								// yã®å¤‰å½¢ï¼ˆä¸Šï¼‰
+static const int DRAW_BOTTOM = DRAW_Y_TOP + DRAW_HEIGHT;		// yã®å¤‰å½¢ï¼ˆä¸‹ï¼‰
+static const int Y_DEFAULT_DIFF = 50;							// yã®æ²ˆã¿è¾¼ã¿åº¦
+static const int DRAW_X_DISTANCE = 50;							// ç”»åƒã¨æ¬¡ã®ç”»åƒã®xåº§æ¨™ã®é–“éš”
+static const int DRAW_FRAME_COST = 50;							// ä½•ãƒ•ãƒ¬ãƒ¼ãƒ ã‹ã‘ã¦ç”»åƒã®ç§»å‹•ãƒ»å¤‰å½¢ã‚’è¡Œã†ã‹
 
 static void DrawMI_L(int gr_handle, int draw_x, int y2_diff = 0, int x2_diff = 0, bool flag = false)
 {
@@ -121,10 +121,10 @@ static void DrawMI_R(int gr_handle, int draw_x, int y1_diff = 0, int x1_diff = 0
 	);
 }
 
-// •`‰æ
+// æç”»
 void Room_Draw()
 {
-	// ‰æ‘œ
+	// ç”»åƒ
 	DrawGraph(0, 0, G_main, TRUE);
 	if (ChangeImage_flag == true) {
 		ChangeMusicImageGraph();
@@ -150,11 +150,11 @@ void Room_Draw()
 	DrawFormatString(300, 300, GetColor(0, 0, 0), "%s", music[NowMusicNum].name);
 }
 
-// ‰¹ŠyƒCƒ[ƒW‰æ‘œ‚Ì•Ï‰»•`‰æ
+// éŸ³æ¥½ã‚¤ãƒ¡ãƒ¼ã‚¸ç”»åƒã®å¤‰åŒ–æç”»
 bool flag = true;
 void ChangeMusicImageGraph() {
 	if (flag == true) { ChangeImage_frame++; flag = false; }
-	else if (FrameNum % 10 == 0) { flag = true; }
+	else if (FrameNum % 3 == 0) { flag = true; }
 	if (ChangeImage_for == 1) {
 		int draw_x = DRAW_X_START_POINT + 6 * (DRAW_X_DISTANCE + DRAW_WIDTH_S);
 		for (int i = 6; i >= 0; --i) {
@@ -183,8 +183,8 @@ void ChangeMusicImageGraph() {
 				DrawMI_L(music[(i + NowMusicNum) % MusicNum].image, draw_x + (DRAW_X_DISTANCE + DRAW_WIDTH_S) * -ChangeImage_frame / DRAW_FRAME_COST, Y_DEFAULT_DIFF * abs(ChangeImage_frame - Y_DEFAULT_DIFF) / DRAW_FRAME_COST, (DRAW_WIDTH_L - DRAW_X_DISTANCE) * -ChangeImage_frame / DRAW_FRAME_COST,TRUE);
 			}
 			else if (i == 4) {
-				DrawMI_R(music[(i + NowMusicNum) % MusicNum].image, draw_x + (DRAW_X_DISTANCE + DRAW_WIDTH_S) * (75 - ChangeImage_frame) / DRAW_FRAME_COST, Y_DEFAULT_DIFF * ChangeImage_frame / DRAW_FRAME_COST, (DRAW_WIDTH_L - DRAW_X_DISTANCE) * -ChangeImage_frame / DRAW_FRAME_COST);
-			}
+				DrawMI_R(music[(i + NowMusicNum) % MusicNum].image, draw_x + (DRAW_X_DISTANCE + DRAW_WIDTH_S) * (abs(DRAW_X_START_POINT) -ChangeImage_frame) / DRAW_FRAME_COST, Y_DEFAULT_DIFF * ChangeImage_frame / DRAW_FRAME_COST, (DRAW_WIDTH_L - DRAW_X_DISTANCE) * -ChangeImage_frame / DRAW_FRAME_COST);
+      }
 			else if (i > 4) {
 				DrawMI_R(music[(i + NowMusicNum) % MusicNum].image, draw_x + 150 + -ChangeImage_frame * 2);
 			}
