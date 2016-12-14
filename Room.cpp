@@ -99,6 +99,7 @@ static const int DRAW_FRAME_COST = 50;							// 何フレームかけて画像の移動・変形
 
 static void DrawMI_L(int gr_handle, int draw_x, int y2_diff = 0, int x2_diff = 0)
 {
+	int Draw_Width = (x2_diff != 0 ? DRAW_WIDTH_L : DRAW_WIDTH_S);
 	DrawModiGraph(
 		draw_x, DRAW_Y_TOP,
 		draw_x + DRAW_WIDTH_S + x2_diff, DRAW_Y_TOP + Y_DEFAULT_DIFF - y2_diff,
@@ -173,20 +174,21 @@ void ChangeMusicImageGraph() {
 		}
 	}
 	else {
+		int draw_x = DRAW_X_START_POINT + DRAW_X_DISTANCE * 2;
 		for (int i = 0; i < 7; ++i) {
-			int draw_x = DRAW_X_START_POINT + i * DRAW_X_DISTANCE;
 			if (i < 3) {
-				// DrawModiGraph(draw_x - ChangeImage_frame * 2, DRAW_Y_TOP, draw_x + 50 - ChangeImage_frame * 2, DRAW_X_START_POINT, draw_x + 50 - ChangeImage_frame * 2, 175, draw_x - ChangeImage_frame * 2, 225, music[(i + NowMusicNum) % MusicNum].image, TRUE);
+				DrawMI_L(music[(i + NowMusicNum) % MusicNum].image, draw_x + ChangeImage_frame * 2);
 			}
 			else if (i == 3) {
-				// DrawModiGraph(draw_x - ChangeImage_frame * 2, DRAW_Y_TOP, draw_x + 200 - ChangeImage_frame * 5, DRAW_Y_TOP + ChangeImage_frame, draw_x + 200 - ChangeImage_frame * 5, 225 - ChangeImage_frame, draw_x - ChangeImage_frame * 2, 225, music[(i + NowMusicNum) % MusicNum].image, TRUE);
+				DrawMI_L(music[(i + NowMusicNum) % MusicNum].image, draw_x + DRAW_X_DISTANCE * 2 / DRAW_FRAME_COST * ChangeImage_frame, -Y_DEFAULT_DIFF / DRAW_FRAME_COST * abs(ChangeImage_frame - 50), -(DRAW_WIDTH_L - DRAW_X_DISTANCE) / DRAW_FRAME_COST * ChangeImage_frame + 1);
 			}
 			else if (i == 4) {
-				// DrawModiGraph(draw_x + 150 - ChangeImage_frame * 5, DRAW_X_START_POINT - ChangeImage_frame, draw_x + 200 - ChangeImage_frame * 2, DRAW_Y_TOP, draw_x + 200 - ChangeImage_frame * 2, 225, draw_x + 150 - ChangeImage_frame * 5, 175 + ChangeImage_frame, music[(i + NowMusicNum) % MusicNum].image, TRUE);
+				DrawMI_R(music[(i + NowMusicNum) % MusicNum].image, draw_x + DRAW_X_DISTANCE * 2 / DRAW_FRAME_COST * ChangeImage_frame, -Y_DEFAULT_DIFF / DRAW_FRAME_COST * ChangeImage_frame, -(DRAW_WIDTH_L - DRAW_X_DISTANCE) / DRAW_FRAME_COST * ChangeImage_frame);
 			}
 			else if (i > 4) {
-				// DrawModiGraph(draw_x + 150 - ChangeImage_frame * 2, DRAW_X_START_POINT, draw_x + 200 - ChangeImage_frame * 2, DRAW_Y_TOP, draw_x + 200 - ChangeImage_frame * 2, DRAW_Y_TOP + 200, draw_x + 150 - ChangeImage_frame * 2, 175, music[(i + NowMusicNum) % MusicNum].image, TRUE);
+				DrawMI_R(music[(i + NowMusicNum) % MusicNum].image, draw_x + 150 + ChangeImage_frame * 2);
 			}
+			draw_x += DRAW_X_DISTANCE * 2;
 		}
 	}
 	if (ChangeImage_frame >= DRAW_FRAME_COST) {
