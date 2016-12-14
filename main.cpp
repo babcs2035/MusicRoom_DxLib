@@ -3,6 +3,7 @@
 #include "Keyboard.h"
 
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
+	SetOutApplicationLogValidFlag(FALSE);
 	ChangeWindowMode(TRUE);
 	SetMainWindowText("MusicRoom v1.0");
 	SetGraphMode(640, 640, 32);
