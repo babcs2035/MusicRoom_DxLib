@@ -1,6 +1,7 @@
 #include "DxLib.h"
 #include "Keyboard.h"
 #include <string.h>
+#include "Mouse.h"
 #define MAX_LOAD_MUSIC			50
 #define MUSIC_COMMENT_HEIGHT	15
 #define MUSIC_COMMENT_WEIGHT	25
@@ -81,6 +82,7 @@ void Room_Init()
 void Room_Update()
 {
 	FrameNum++;
+	// 音楽選択
 	NowTime = GetNowCount() - FirstTime;
 	if (Keyboard_Get(KEY_INPUT_LEFT) != 0 && ChangeImage_flag == false) {
 		ChangeImage_for = 1;
@@ -90,6 +92,11 @@ void Room_Update()
 		ChangeImage_for = 2;
 		ChangeImage_flag = true;
 	}
+
+	// 音楽調節
+	if (CheckMouseClick(15, 268, 55, 308) == true) { PlayMusic_Update(3); }
+	if (CheckMouseClick(60, 268, 100, 308) == true) { PlayMusic_Update(1); }
+	if (CheckMouseClick(585, 268, 625, 308) == true) { PlayMusic_Update(4); }
 }
 
 static const int DRAW_X_START_POINT = -75;						// 画面外から登場させる
@@ -221,7 +228,7 @@ void ChangeMusicImageGraph() {
 }
 
 // 音楽再生（更新）
-// 0:新しく再生	1:一時停止	2:途中から再生	3:そのまま再生
+// 0:新しく再生	1:一時停止	2:途中から再生	3:そのまま再生	4:停止
 int Music_Position = 0;
 void PlayMusic_Update(int flag)
 {
