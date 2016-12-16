@@ -255,6 +255,11 @@ void PlayMusic_Update(int flag)
 	case 3:
 		Music_Position = GetSoundCurrentPosition(music[NowMusicNum].sound);
 		break;
+
+	case 4:
+		StopSound();
+		Music_Position = 0;
+		break;
 	}
 }
 
