@@ -154,7 +154,7 @@ void Room_Draw()
 	DrawGraph(0, 0, G_frame, TRUE);
 	{
 		DrawGraph(15, 270, G_button[0], TRUE);
-		DrawGraph(50, 270, G_button[2], TRUE);
+		DrawGraph(60, 270, G_button[2], TRUE);
 		DrawGraph(593, 270, G_button[1], TRUE);
 	}
 
