@@ -153,7 +153,7 @@ void Room_Draw()
 	}
 	DrawGraph(0, 0, G_frame, TRUE);
 
-	DrawFormatString(300, 300, GetColor(0, 0, 0), "%s", music[NowMusicNum].name);
+	DrawFormatString(300, 300, GetColor(255, 255, 255), "%s", music[NowMusicNum].name);
 }
 
 // 音楽イメージ画像の変化描画
@@ -215,7 +215,7 @@ void ChangeMusicImageGraph() {
 	}
 }
 
-// 音楽再生
+// 音楽再生（更新）
 // 0:新しく再生	1:一時停止	2:途中から再生	3:そのまま再生
 int Music_Position = 0;
 void PlayMusic_Update(int flag)
@@ -242,6 +242,29 @@ void PlayMusic_Update(int flag)
 
 	case 3:
 		Music_Position = GetSoundCurrentPosition(music[NowMusicNum].sound);
+		break;
+	}
+}
+
+// 音楽再生（描画）
+// 0:新しく再生	1:一時停止	2:途中から再生	3:そのまま再生
+void PlayMusic_Draw(int flag) {
+	switch (flag)
+	{
+	case 0:
+		DrawString(350, 300, "新しく再生", GetColor(255, 255, 255));
+		break;
+
+	case 1:
+		DrawString(350, 300, "一時停止", GetColor(255, 255, 255));
+		break;
+
+	case 2:
+		DrawString(350, 300, "途中から再生", GetColor(255, 255, 255));
+		break;
+
+	case 3:
+		DrawString(350, 300, "そのまま再生", GetColor(255, 255, 255));
 		break;
 	}
 }
