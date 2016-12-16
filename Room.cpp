@@ -20,7 +20,7 @@ typedef struct Music_s {
 
 // グローバル変数
 Music_data music[MAX_LOAD_MUSIC];
-int G_main, G_frame;
+int G_main, G_frame, G_button[3];
 int NowMusicNum = 0;
 int ChangeImage_frame = 0;
 int FirstTime, NowTime;
@@ -73,6 +73,7 @@ void Room_Init()
 	FileRead_close(FP_music_list);
 	G_main = LoadGraph("data\\graph\\main.png");
 	G_frame = LoadGraph("data\\graph\\frame.png");
+	LoadDivGraph("data\\graph\\button.png", 3, 1, 3, 32, 96, G_button);
 	FirstTime = GetNowCount();
 }
 
