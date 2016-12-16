@@ -73,7 +73,7 @@ void Room_Init()
 	FileRead_close(FP_music_list);
 	G_main = LoadGraph("data\\graph\\main.png");
 	G_frame = LoadGraph("data\\graph\\frame.png");
-	LoadDivGraph("data\\graph\\button.png", 3, 1, 3, 32, 96, G_button);
+	LoadDivGraph("data\\graph\\button.png", 3, 3, 1, 32, 32, G_button);
 	FirstTime = GetNowCount();
 }
 
@@ -152,6 +152,11 @@ void Room_Draw()
 		}
 	}
 	DrawGraph(0, 0, G_frame, TRUE);
+	{
+		DrawGraph(15, 270, G_button[0], TRUE);
+		DrawGraph(50, 270, G_button[2], TRUE);
+		DrawGraph(593, 270, G_button[1], TRUE);
+	}
 
 	DrawFormatString(300, 300, GetColor(255, 255, 255), "%s", music[NowMusicNum].name);
 }
