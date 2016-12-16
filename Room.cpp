@@ -18,7 +18,7 @@ typedef struct Music_s {
 
 // グローバル変数
 Music_data music[MAX_LOAD_MUSIC];
-int G_main;
+int G_main, G_frame;
 int G_music[MAX_LOAD_MUSIC];
 int NowMusicNum = 0;
 int ChangeImage_frame = 0;
@@ -69,6 +69,7 @@ void Room_Init()
 	}
 	FileRead_close(FP_music_list);
 	G_main = LoadGraph("data\\graph\\main.png");
+	G_frame = LoadGraph("data\\graph\\frame.png");
 	FirstTime = GetNowCount();
 }
 
@@ -146,6 +147,7 @@ void Room_Draw()
 			}
 		}
 	}
+	DrawGraph(0, 0, G_frame, TRUE);
 
 	DrawFormatString(300, 300, GetColor(0, 0, 0), "%s", music[NowMusicNum].name);
 }
