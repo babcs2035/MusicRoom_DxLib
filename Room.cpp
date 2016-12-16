@@ -7,7 +7,7 @@
 
 // 関数プロトタイプ宣言
 void ChangeMusicImageGraph();
-void PlayMusic();
+void PlayMusic_Update(int flag);
 
 // 構造体
 typedef struct Music_s {
@@ -215,8 +215,32 @@ void ChangeMusicImageGraph() {
 }
 
 // 音楽再生
-// 0:新しく再生	1:途中から再生	2:一時停止
-void PlayMusic(int flag)
+// 0:新しく再生	1:一時停止	2:途中から再生	3:そのまま再生
+int Music_Position = 0;
+void PlayMusic_Update(int flag)
 {
-	
+	switch (flag)
+	{
+	case 0:
+		StopSound();
+		Music_Position = 0;
+		PlaySoundMem(music[NowMusicNum].sound, DX_PLAYTYPE_LOOP, TRUE);
+		Music_Position = GetSoundCurrentPosition(music[NowMusicNum].sound);
+		break;
+
+	case 1:
+		Music_Position = GetSoundCurrentPosition(music[NowMusicNum].sound);
+		StopSound();
+		break;
+
+	case 2:
+		SetSoundCurrentPosition(Music_Position, music[NowMusicNum].sound);
+		PlaySoundMem(music[NowMusicNum].sound, DX_PLAYTYPE_LOOP, FALSE);
+		Music_Position = GetSoundCurrentPosition(music[NowMusicNum].sound);
+		break;
+
+	case 3:
+		Music_Position = GetSoundCurrentPosition(music[NowMusicNum].sound);
+		break;
+	}
 }
