@@ -85,18 +85,20 @@ void Room_Update()
 	// 音楽選択
 	NowTime = GetNowCount() - FirstTime;
 	if (Keyboard_Get(KEY_INPUT_LEFT) != 0 && ChangeImage_flag == false) {
+		StopSoundMem(music[NowMusicNum].sound);
 		ChangeImage_for = 1;
 		ChangeImage_flag = true;
 	}
 	else if (Keyboard_Get(KEY_INPUT_RIGHT) != 0 && ChangeImage_flag == false) {
+		StopSoundMem(music[NowMusicNum].sound);
 		ChangeImage_for = 2;
 		ChangeImage_flag = true;
 	}
 
 	// 音楽調節
-	if (CheckMouseClick(15, 268, 55, 308) == true) { PlayMusic_Update(3); }
-	if (CheckMouseClick(60, 268, 100, 308) == true) { PlayMusic_Update(1); }
-	if (CheckMouseClick(585, 268, 625, 308) == true) { PlayMusic_Update(4); }
+	if (CheckMouseClick(15, 268, 55, 308) == true) { PlayMusic_Update(1); }
+	else if (CheckMouseClick(60, 268, 100, 308) == true) { PlayMusic_Update(2); }
+	else if (CheckMouseClick(585, 268, 625, 308) == true) { PlayMusic_Update(3); }
 }
 
 static const int DRAW_X_START_POINT = -75;						// 画面外から登場させる
@@ -228,60 +230,40 @@ void ChangeMusicImageGraph() {
 }
 
 // 音楽再生（更新）
-// 0:新しく再生	1:一時停止	2:途中から再生	3:そのまま再生	4:停止
-int Music_Position = 0;
+// 1:再生	2:一時停止	3:停止
 void PlayMusic_Update(int flag)
 {
+	static int Music_Position = 0;
 	switch (flag)
 	{
-	case 0:
-		StopSound();
-		Music_Position = 0;
-		PlaySoundMem(music[NowMusicNum].sound, DX_PLAYTYPE_LOOP, TRUE);
-		Music_Position = GetSoundCurrentPosition(music[NowMusicNum].sound);
-		break;
+	case 1:	// 再生
+		if (Music_Position == 0) {	// 最初から
+			PlaySoundMem(music[NowMusicNum].sound, DX_PLAYTYPE_LOOP, TRUE);
+			Music_Position = GetSoundCurrentPosition(music[NowMusicNum].sound);
+			break;
+		}
+		else {	// 途中から
+			SetSoundCurrentPosition(Music_Position, music[NowMusicNum].sound);
+			PlaySoundMem(music[NowMusicNum].sound, DX_PLAYTYPE_LOOP, FALSE);
+			Music_Position = GetSoundCurrentPosition(music[NowMusicNum].sound);
+			break;
+		}
 
-	case 1:
+	case 2:	// 一時停止
 		Music_Position = GetSoundCurrentPosition(music[NowMusicNum].sound);
-		StopSound();
+		StopSoundMem(music[NowMusicNum].sound);
 		break;
-
-	case 2:
-		SetSoundCurrentPosition(Music_Position, music[NowMusicNum].sound);
-		PlaySoundMem(music[NowMusicNum].sound, DX_PLAYTYPE_LOOP, FALSE);
-		Music_Position = GetSoundCurrentPosition(music[NowMusicNum].sound);
-		break;
-
-	case 3:
-		Music_Position = GetSoundCurrentPosition(music[NowMusicNum].sound);
-		break;
-
-	case 4:
-		StopSound();
+		
+	case 3:	// 停止
+		StopSoundMem(music[NowMusicNum].sound);
 		Music_Position = 0;
 		break;
 	}
 }
 
 // 音楽再生（描画）
-// 0:新しく再生	1:一時停止	2:途中から再生	3:そのまま再生
-void PlayMusic_Draw(int flag) {
-	switch (flag)
-	{
-	case 0:
-		DrawString(350, 300, "新しく再生", GetColor(255, 255, 255));
-		break;
-
-	case 1:
-		DrawString(350, 300, "一時停止", GetColor(255, 255, 255));
-		break;
-
-	case 2:
-		DrawString(350, 300, "途中から再生", GetColor(255, 255, 255));
-		break;
-
-	case 3:
-		DrawString(350, 300, "そのまま再生", GetColor(255, 255, 255));
-		break;
-	}
+// 1:再生	2:一時停止	3:停止
+void PlayMusic_Draw(int flag)
+{
+	
 }
