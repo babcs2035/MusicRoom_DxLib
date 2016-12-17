@@ -1,12 +1,14 @@
 #include "DxLib.h"
 #include "Keyboard.h"
 #include <string.h>
+#include "Mouse.h"
 #define MAX_LOAD_MUSIC			50
 #define MUSIC_COMMENT_HEIGHT	15
 #define MUSIC_COMMENT_WEIGHT	25
 
 // 関数プロトタイプ宣言
 void ChangeMusicImageGraph();
+void PlayMusic_Update(int flag);
 
 // 構造体
 typedef struct Music_s {
@@ -14,12 +16,12 @@ typedef struct Music_s {
 	int image;
 	char creator[15];
 	char comment[MUSIC_COMMENT_HEIGHT][MUSIC_COMMENT_WEIGHT];
+	int sound;
 }Music_data;
 
 // グローバル変数
 Music_data music[MAX_LOAD_MUSIC];
-int G_main;
-int G_music[MAX_LOAD_MUSIC];
+int G_main, G_frame, G_button[3];
 int NowMusicNum = 0;
 int ChangeImage_frame = 0;
 int FirstTime, NowTime;
@@ -28,12 +30,13 @@ int MusicNum;
 bool ChangeImage_flag = false;
 int ChangeImage_for = 0;
 int FrameNum = 0;
+int Music_Position = 0;
 
 // 初期化
 void Room_Init()
 {
 	FrameNum = 0;
-	TCHAR Gfilename[50];
+	TCHAR Filename[50];
 	bool flag = false;
 	int FP_music_list = FileRead_open("data\\music_list.txt");
 	FileRead_gets(MusicNumStr, sizeof(MusicNumStr), FP_music_list);
@@ -41,11 +44,11 @@ void Room_Init()
 	for (int i = 0; i < MusicNum; ++i) {
 		FileRead_gets(music[i].name, sizeof(music[i].name), FP_music_list);
 		music[i].name[strlen(music[i].name)] = '\0';
-		sprintfDx(Gfilename, "data\\graph\\%s.png", music[i].name);
-		music[i].image = LoadGraph(Gfilename);
+		sprintfDx(Filename, "data\\graph\\%s.png", music[i].name);
+		music[i].image = LoadGraph(Filename);
 		if (music[i].image == -1) { music[i].image = LoadGraph("data\\graph\\no image.png", TRUE); }
-		sprintf(Gfilename, "data\\comment\\%s.txt", music[i].name);
-		int FP_comment = FileRead_open(Gfilename);
+		sprintf(Filename, "data\\comment\\%s.txt", music[i].name);
+		int FP_comment = FileRead_open(Filename);
 		FileRead_gets(music[i].creator, sizeof(music[i].creator), FP_comment);
 		for (int j = 0; FileRead_eof(FP_comment) == FALSE && j < sizeof(music[i].comment[j]); ++j) {
 			static_assert(sizeof(music[i].comment[j]) == 25, "");
@@ -66,9 +69,13 @@ void Room_Init()
 			}
 		}
 		FileRead_close(FP_comment);
+		sprintf(Filename, "data\\music\\%s.mp3", music[i].name);
+		music[i].sound = LoadSoundMem(Filename);
 	}
 	FileRead_close(FP_music_list);
 	G_main = LoadGraph("data\\graph\\main.png");
+	G_frame = LoadGraph("data\\graph\\frame.png");
+	LoadDivGraph("data\\graph\\button.png", 3, 3, 1, 40, 40, G_button);
 	FirstTime = GetNowCount();
 }
 
@@ -76,15 +83,25 @@ void Room_Init()
 void Room_Update()
 {
 	FrameNum++;
+	// 音楽選択
 	NowTime = GetNowCount() - FirstTime;
 	if (Keyboard_Get(KEY_INPUT_LEFT) != 0 && ChangeImage_flag == false) {
+		StopSoundMem(music[NowMusicNum].sound);
+		Music_Position = 0;
 		ChangeImage_for = 1;
 		ChangeImage_flag = true;
 	}
 	else if (Keyboard_Get(KEY_INPUT_RIGHT) != 0 && ChangeImage_flag == false) {
+		StopSoundMem(music[NowMusicNum].sound);
+		Music_Position = 0;
 		ChangeImage_for = 2;
 		ChangeImage_flag = true;
 	}
+
+	// 音楽調節
+	if (CheckMouseClick(15, 268, 55, 308) == true) { PlayMusic_Update(1); }
+	else if (CheckMouseClick(60, 268, 100, 308) == true) { PlayMusic_Update(2); }
+	else if (CheckMouseClick(585, 268, 625, 308) == true) { PlayMusic_Update(3); }
 }
 
 static const int DRAW_X_START_POINT = -75;						// 画面外から登場させる
@@ -146,15 +163,21 @@ void Room_Draw()
 			}
 		}
 	}
+	DrawGraph(0, 0, G_frame, TRUE);
+	{
+		DrawGraph(15, 268, G_button[0], TRUE);
+		DrawGraph(60, 268, G_button[2], TRUE);
+		DrawGraph(585, 268, G_button[1], TRUE);
+	}
 
-	DrawFormatString(300, 300, GetColor(0, 0, 0), "%s", music[NowMusicNum].name);
+	DrawFormatString(300, 300, GetColor(255, 255, 255), "%s", music[NowMusicNum].name);
 }
 
 // 音楽イメージ画像の変化描画
 bool flag = true;
 void ChangeMusicImageGraph() {
 	if (flag == true) { ChangeImage_frame++; flag = false; }
-	else if (FrameNum % 3 == 0) { flag = true; }
+	else if (FrameNum % 10 == 0) { flag = true; }
 	if (ChangeImage_for == 1) {
 		int draw_x = DRAW_X_START_POINT + 6 * (DRAW_X_DISTANCE + DRAW_WIDTH_S);
 		for (int i = 6; i >= 0; --i) {
@@ -207,4 +230,42 @@ void ChangeMusicImageGraph() {
 		}
 		ChangeImage_for = 0;
 	}
+}
+
+// 音楽再生（更新）
+// 1:再生	2:一時停止	3:停止
+void PlayMusic_Update(int flag)
+{
+	switch (flag)
+	{
+	case 1:	// 再生
+		if (Music_Position == 0) {	// 最初から
+			PlaySoundMem(music[NowMusicNum].sound, DX_PLAYTYPE_LOOP, TRUE);
+			Music_Position = GetSoundCurrentPosition(music[NowMusicNum].sound);
+			break;
+		}
+		else {	// 途中から
+			SetSoundCurrentPosition(Music_Position, music[NowMusicNum].sound);
+			PlaySoundMem(music[NowMusicNum].sound, DX_PLAYTYPE_LOOP, FALSE);
+			Music_Position = GetSoundCurrentPosition(music[NowMusicNum].sound);
+			break;
+		}
+
+	case 2:	// 一時停止
+		Music_Position = GetSoundCurrentPosition(music[NowMusicNum].sound);
+		StopSoundMem(music[NowMusicNum].sound);
+		break;
+		
+	case 3:	// 停止
+		StopSoundMem(music[NowMusicNum].sound);
+		Music_Position = 0;
+		break;
+	}
+}
+
+// 音楽再生（描画）
+// 1:再生	2:一時停止	3:停止
+void PlayMusic_Draw(int flag)
+{
+	
 }
