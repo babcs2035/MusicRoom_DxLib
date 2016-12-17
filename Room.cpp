@@ -150,15 +150,15 @@ void Room_Draw()
 		int draw_x = DRAW_X_START_POINT;
 		for (int i = 0; i < 7; ++i) {
 			if (i < 3) {
-				DrawMI_L(music[(i + NowMusicNum) % MusicNum].image, draw_x);
+				DrawMI_L(music[(i + NowMusicNum+2) % MusicNum].image, draw_x);
 				draw_x += DRAW_WIDTH_S + DRAW_X_DISTANCE;
 			}
 			else if (i == 3) {
-				DrawModiGraph(draw_x, DRAW_Y_TOP, draw_x + 200, DRAW_Y_TOP, draw_x + 200, 225, draw_x, 225, music[(i + NowMusicNum) % MusicNum].image, TRUE);
+				DrawModiGraph(draw_x, DRAW_Y_TOP, draw_x + 200, DRAW_Y_TOP, draw_x + 200, 225, draw_x, 225, music[(i + NowMusicNum+2) % MusicNum].image, TRUE);
 				draw_x += 200 + DRAW_X_DISTANCE;
 			}
 			else {
-				DrawMI_R(music[(i + NowMusicNum) % MusicNum].image, draw_x);
+				DrawMI_R(music[(i + NowMusicNum+2) % MusicNum].image, draw_x);
 				draw_x += DRAW_WIDTH_S + DRAW_X_DISTANCE;
 			}
 		}
@@ -182,16 +182,16 @@ void ChangeMusicImageGraph() {
 		int draw_x = DRAW_X_START_POINT + 6 * (DRAW_X_DISTANCE + DRAW_WIDTH_S);
 		for (int i = 6; i >= 0; --i) {
 			if (i < 2) {
-				DrawMI_L(music[(i + NowMusicNum) % MusicNum].image, draw_x + ChangeImage_frame * 2);
+				DrawMI_L(music[(i + NowMusicNum + 2) % MusicNum].image, draw_x + ChangeImage_frame * 2);
 			}
 			else if (i == 2) {
-				DrawMI_L(music[(i + NowMusicNum) % MusicNum].image, draw_x + DRAW_X_DISTANCE * 2 * ChangeImage_frame / DRAW_FRAME_COST, Y_DEFAULT_DIFF * ChangeImage_frame / DRAW_FRAME_COST, (DRAW_WIDTH_L - DRAW_X_DISTANCE) * ChangeImage_frame / DRAW_FRAME_COST);
+				DrawMI_L(music[(i + NowMusicNum + 2) % MusicNum].image, draw_x + DRAW_X_DISTANCE * 2 * ChangeImage_frame / DRAW_FRAME_COST, Y_DEFAULT_DIFF * ChangeImage_frame / DRAW_FRAME_COST, (DRAW_WIDTH_L - DRAW_X_DISTANCE) * ChangeImage_frame / DRAW_FRAME_COST);
 			}
 			else if (i == 3) {
-				DrawMI_R(music[(i + NowMusicNum) % MusicNum].image, draw_x + DRAW_X_DISTANCE * 2 * ChangeImage_frame / DRAW_FRAME_COST, Y_DEFAULT_DIFF * abs(ChangeImage_frame - Y_DEFAULT_DIFF) / DRAW_FRAME_COST, (DRAW_WIDTH_L - DRAW_X_DISTANCE) * ChangeImage_frame / DRAW_FRAME_COST,TRUE);
+				DrawMI_R(music[(i + NowMusicNum + 2) % MusicNum].image, draw_x + DRAW_X_DISTANCE * 2 * ChangeImage_frame / DRAW_FRAME_COST, Y_DEFAULT_DIFF * abs(ChangeImage_frame - Y_DEFAULT_DIFF) / DRAW_FRAME_COST, (DRAW_WIDTH_L - DRAW_X_DISTANCE) * ChangeImage_frame / DRAW_FRAME_COST,TRUE);
 			}
 			else if (i > 3) {
-				DrawMI_R(music[(i + NowMusicNum) % MusicNum].image, draw_x + 150 + ChangeImage_frame * 2);
+				DrawMI_R(music[(i + NowMusicNum + 2) % MusicNum].image, draw_x + 150 + ChangeImage_frame * 2);
 			}
 			draw_x -= DRAW_X_DISTANCE + DRAW_WIDTH_S;
 		}
@@ -200,16 +200,16 @@ void ChangeMusicImageGraph() {
 		int draw_x = DRAW_X_START_POINT + 6 * (DRAW_X_DISTANCE + DRAW_WIDTH_S);
 		for (int i = 6; i >= 0; --i) {
 			if (i < 3) {
-				DrawMI_L(music[(i + NowMusicNum) % MusicNum].image, draw_x + -ChangeImage_frame * 2);
+				DrawMI_L(music[(i + NowMusicNum + 2) % MusicNum].image, draw_x + -ChangeImage_frame * 2);
 			}
 			else if (i == 3) {
-				DrawMI_L(music[(i + NowMusicNum) % MusicNum].image, draw_x + (DRAW_X_DISTANCE + DRAW_WIDTH_S) * -ChangeImage_frame / DRAW_FRAME_COST, Y_DEFAULT_DIFF * abs(ChangeImage_frame - Y_DEFAULT_DIFF) / DRAW_FRAME_COST, (DRAW_WIDTH_L - DRAW_X_DISTANCE) * -ChangeImage_frame / DRAW_FRAME_COST,TRUE);
+				DrawMI_L(music[(i + NowMusicNum + 2) % MusicNum].image, draw_x + (DRAW_X_DISTANCE + DRAW_WIDTH_S) * -ChangeImage_frame / DRAW_FRAME_COST, Y_DEFAULT_DIFF * abs(ChangeImage_frame - Y_DEFAULT_DIFF) / DRAW_FRAME_COST, (DRAW_WIDTH_L - DRAW_X_DISTANCE) * -ChangeImage_frame / DRAW_FRAME_COST,TRUE);
 			}
 			else if (i == 4) {
-				DrawMI_R(music[(i + NowMusicNum) % MusicNum].image, draw_x + (DRAW_X_DISTANCE + DRAW_WIDTH_S) * (abs(DRAW_X_START_POINT) -ChangeImage_frame) / DRAW_FRAME_COST, Y_DEFAULT_DIFF * ChangeImage_frame / DRAW_FRAME_COST, (DRAW_WIDTH_L - DRAW_X_DISTANCE) * -ChangeImage_frame / DRAW_FRAME_COST);
+				DrawMI_R(music[(i + NowMusicNum + 2) % MusicNum].image, draw_x + (DRAW_X_DISTANCE + DRAW_WIDTH_S) * (abs(DRAW_X_START_POINT) -ChangeImage_frame) / DRAW_FRAME_COST, Y_DEFAULT_DIFF * ChangeImage_frame / DRAW_FRAME_COST, (DRAW_WIDTH_L - DRAW_X_DISTANCE) * -ChangeImage_frame / DRAW_FRAME_COST);
       }
 			else if (i > 4) {
-				DrawMI_R(music[(i + NowMusicNum) % MusicNum].image, draw_x + 150 + -ChangeImage_frame * 2);
+				DrawMI_R(music[(i + NowMusicNum + 2) % MusicNum].image, draw_x + 150 + -ChangeImage_frame * 2);
 			}
 			draw_x -= DRAW_X_DISTANCE + DRAW_WIDTH_S;
 		}
