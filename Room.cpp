@@ -30,6 +30,7 @@ int MusicNum;
 bool ChangeImage_flag = false;
 int ChangeImage_for = 0;
 int FrameNum = 0;
+int Music_Position = 0;
 
 // 初期化
 void Room_Init()
@@ -86,11 +87,13 @@ void Room_Update()
 	NowTime = GetNowCount() - FirstTime;
 	if (Keyboard_Get(KEY_INPUT_LEFT) != 0 && ChangeImage_flag == false) {
 		StopSoundMem(music[NowMusicNum].sound);
+		Music_Position = 0;
 		ChangeImage_for = 1;
 		ChangeImage_flag = true;
 	}
 	else if (Keyboard_Get(KEY_INPUT_RIGHT) != 0 && ChangeImage_flag == false) {
 		StopSoundMem(music[NowMusicNum].sound);
+		Music_Position = 0;
 		ChangeImage_for = 2;
 		ChangeImage_flag = true;
 	}
@@ -233,7 +236,6 @@ void ChangeMusicImageGraph() {
 // 1:再生	2:一時停止	3:停止
 void PlayMusic_Update(int flag)
 {
-	static int Music_Position = 0;
 	switch (flag)
 	{
 	case 1:	// 再生
