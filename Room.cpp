@@ -9,6 +9,7 @@
 // 関数プロトタイプ宣言
 void ChangeMusicImageGraph();
 void PlayMusic_Update(int flag);
+void PlayMusic_Draw();
 
 // 構造体
 typedef struct Music_s {
@@ -31,6 +32,8 @@ bool ChangeImage_flag = false;
 int ChangeImage_for = 0;
 int FrameNum = 0;
 int Music_Position = 0;
+float Music_TotalTime = 0;
+float Music_NowTime = 0;
 
 // 初期化
 void Room_Init()
@@ -169,7 +172,7 @@ void Room_Draw()
 		DrawGraph(60, 268, G_button[2], TRUE);
 		DrawGraph(585, 268, G_button[1], TRUE);
 	}
-
+	PlayMusic_Draw();
 	DrawFormatString(300, 300, GetColor(255, 255, 255), "%s", music[NowMusicNum].name);
 }
 
@@ -239,6 +242,8 @@ void PlayMusic_Update(int flag)
 	switch (flag)
 	{
 	case 1:	// 再生
+		Music_TotalTime = 0;
+		Music_NowTime = 0;
 		if (Music_Position == 0) {	// 最初から
 			PlaySoundMem(music[NowMusicNum].sound, DX_PLAYTYPE_LOOP, TRUE);
 			Music_Position = GetSoundCurrentPosition(music[NowMusicNum].sound);
@@ -259,13 +264,20 @@ void PlayMusic_Update(int flag)
 	case 3:	// 停止
 		StopSoundMem(music[NowMusicNum].sound);
 		Music_Position = 0;
+		Music_TotalTime = -1;
+		Music_NowTime = -1;
 		break;
 	}
 }
 
 // 音楽再生（描画）
-// 1:再生	2:一時停止	3:停止
-void PlayMusic_Draw(int flag)
+void PlayMusic_Draw()
 {
-	
+	// 再生バー
+	DrawRoundRect(110, 278, 575, 300, 3, 3, GetColor(32, 32, 32), TRUE);
+	if (Music_NowTime != -1 && Music_TotalTime != -1) {
+		Music_TotalTime = GetSoundTotalTime(music[NowMusicNum].sound);
+		Music_NowTime = GetSoundCurrentTime(music[NowMusicNum].sound);
+		DrawRoundRect(112, 281, 112 + 459 * (Music_NowTime / Music_TotalTime), 297, 3, 3, GetColor(32, 110, 32), TRUE);
+	}
 }
