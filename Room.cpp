@@ -155,7 +155,7 @@ void Room_Draw()
 	{
 		DrawGraph(15, 270, G_button[0], TRUE);
 		DrawGraph(60, 270, G_button[2], TRUE);
-		DrawGraph(585, 270, G_button[1], TRUE);
+		DrawGraph(593, 270, G_button[1], TRUE);
 	}
 
 	DrawFormatString(300, 300, GetColor(255, 255, 255), "%s", music[NowMusicNum].name);
