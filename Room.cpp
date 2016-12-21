@@ -49,7 +49,7 @@ void Room_Init()
 		music[i].name[strlen(music[i].name)] = '\0';
 		sprintfDx(Filename, "data\\graph\\%s.png", music[i].name);
 		music[i].image = LoadGraph(Filename);
-		if (music[i].image == -1) { music[i].image = LoadGraph("data\\graph\\no image.png", TRUE); }
+		if (music[i].image == -1) { music[i].image = LoadGraph("data\\graph\\system\\no image.png", TRUE); }
 		sprintf(Filename, "data\\comment\\%s.txt", music[i].name);
 		int FP_comment = FileRead_open(Filename);
 		FileRead_gets(music[i].creator, sizeof(music[i].creator), FP_comment);
@@ -76,9 +76,9 @@ void Room_Init()
 		music[i].sound = LoadSoundMem(Filename);
 	}
 	FileRead_close(FP_music_list);
-	G_main = LoadGraph("data\\graph\\main.png");
-	G_frame = LoadGraph("data\\graph\\frame.png");
-	LoadDivGraph("data\\graph\\button.png", 6, 3, 2, 40, 40, G_button);
+	G_main = LoadGraph("data\\graph\\system\\main.png");
+	G_frame = LoadGraph("data\\graph\\system\\frame.png");
+	LoadDivGraph("data\\graph\\system\\button.png", 6, 3, 2, 40, 40, G_button);
 	FirstTime = GetNowCount();
 }
 
