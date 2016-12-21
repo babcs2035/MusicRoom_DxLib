@@ -171,6 +171,9 @@ void Room_Draw()
 		}
 	}
 	DrawGraph(0, 0, G_frame, TRUE);
+	if (CheckMouseIn(15, 268, 55, 308) == true) { PlayMusic_Draw(1); }
+	else if (CheckMouseIn(60, 268, 100, 308) == true) { PlayMusic_Update(2); }
+	else if (CheckMouseIn(585, 268, 625, 308) == true) { PlayMusic_Update(3); }
 	PlayMusic_Draw(0);
 	DrawFormatString(300, 300, GetColor(255, 255, 255), "%s", music[NowMusicNum].name);
 }
