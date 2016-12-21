@@ -171,11 +171,6 @@ void Room_Draw()
 		}
 	}
 	DrawGraph(0, 0, G_frame, TRUE);
-	{
-		DrawGraph(15, 268, G_button[0], TRUE);
-		DrawGraph(60, 268, G_button[2], TRUE);
-		DrawGraph(585, 268, G_button[1], TRUE);
-	}
 	PlayMusic_Draw();
 	DrawFormatString(300, 300, GetColor(255, 255, 255), "%s", music[NowMusicNum].name);
 }
@@ -287,4 +282,8 @@ void PlayMusic_Draw()
 		Music_NowTime = GetSoundCurrentTime(music[NowMusicNum].sound);
 		DrawRoundRect(112, 281, 112 + 459 * (Music_NowTime / Music_TotalTime), 297, 3, 3, GetColor(32, 110, 32), TRUE);
 	}
+	// コントロールボタン
+	DrawGraph(15, 268, G_button[0], TRUE);
+	DrawGraph(60, 268, G_button[2], TRUE);
+	DrawGraph(585, 268, G_button[1], TRUE);
 }
