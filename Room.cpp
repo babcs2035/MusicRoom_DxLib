@@ -91,12 +91,16 @@ void Room_Update()
 	if (Keyboard_Get(KEY_INPUT_LEFT) != 0 && ChangeImage_flag == false) {
 		StopSoundMem(music[NowMusicNum].sound);
 		Music_Position = 0;
+		Music_TotalTime = 0;
+		Music_NowTime = 0;
 		ChangeImage_for = 1;
 		ChangeImage_flag = true;
 	}
 	else if (Keyboard_Get(KEY_INPUT_RIGHT) != 0 && ChangeImage_flag == false) {
 		StopSoundMem(music[NowMusicNum].sound);
 		Music_Position = 0;
+		Music_TotalTime = 0;
+		Music_NowTime = 0;
 		ChangeImage_for = 2;
 		ChangeImage_flag = true;
 	}
@@ -232,6 +236,9 @@ void ChangeMusicImageGraph() {
 			}
 		}
 		ChangeImage_for = 0;
+		Music_Position = 0;
+		Music_TotalTime = -1;
+		Music_NowTime = -1;
 	}
 }
 
