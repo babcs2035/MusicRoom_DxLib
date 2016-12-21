@@ -177,7 +177,7 @@ void Room_Draw()
 bool flag = true;
 void ChangeMusicImageGraph() {
 	if (flag == true) { ChangeImage_frame++; flag = false; }
-	else if (FrameNum % 10 == 0) { flag = true; }
+	else if (FrameNum % 7 == 0) { flag = true; }
 	if (ChangeImage_for == 1) {
 		int draw_x = DRAW_X_START_POINT + 6 * (DRAW_X_DISTANCE + DRAW_WIDTH_S);
 		for (int i = 6; i >= 0; --i) {
