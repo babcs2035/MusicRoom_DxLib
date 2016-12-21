@@ -1,6 +1,7 @@
 #include "DxLib.h"
 #include "Keyboard.h"
 #include <string.h>
+#include "Mouse.h"
 #define MAX_LOAD_MUSIC			50
 #define MUSIC_COMMENT_HEIGHT	15
 #define MUSIC_COMMENT_WEIGHT	25
@@ -8,6 +9,7 @@
 // 関数プロトタイプ宣言
 void ChangeMusicImageGraph();
 void PlayMusic_Update(int flag);
+void PlayMusic_Draw(int flag);
 
 // 構造体
 typedef struct Music_s {
@@ -20,7 +22,7 @@ typedef struct Music_s {
 
 // グローバル変数
 Music_data music[MAX_LOAD_MUSIC];
-int G_main, G_frame, G_button[3];
+int G_main, G_frame, G_button[6];
 int NowMusicNum = 0;
 int ChangeImage_frame = 0;
 int FirstTime, NowTime;
@@ -29,6 +31,9 @@ int MusicNum;
 bool ChangeImage_flag = false;
 int ChangeImage_for = 0;
 int FrameNum = 0;
+int Music_Position = 0;
+float Music_TotalTime = 0;
+float Music_NowTime = 0;
 
 // 初期化
 void Room_Init()
@@ -73,7 +78,7 @@ void Room_Init()
 	FileRead_close(FP_music_list);
 	G_main = LoadGraph("data\\graph\\main.png");
 	G_frame = LoadGraph("data\\graph\\frame.png");
-	LoadDivGraph("data\\graph\\button.png", 3, 1, 3, 32, 96, G_button);
+	LoadDivGraph("data\\graph\\button.png", 6, 3, 2, 40, 40, G_button);
 	FirstTime = GetNowCount();
 }
 
@@ -81,15 +86,29 @@ void Room_Init()
 void Room_Update()
 {
 	FrameNum++;
+	// 音楽選択
 	NowTime = GetNowCount() - FirstTime;
 	if (Keyboard_Get(KEY_INPUT_LEFT) != 0 && ChangeImage_flag == false) {
+		StopSoundMem(music[NowMusicNum].sound);
+		Music_Position = 0;
+		Music_TotalTime = 0;
+		Music_NowTime = 0;
 		ChangeImage_for = 1;
 		ChangeImage_flag = true;
 	}
 	else if (Keyboard_Get(KEY_INPUT_RIGHT) != 0 && ChangeImage_flag == false) {
+		StopSoundMem(music[NowMusicNum].sound);
+		Music_Position = 0;
+		Music_TotalTime = 0;
+		Music_NowTime = 0;
 		ChangeImage_for = 2;
 		ChangeImage_flag = true;
 	}
+
+	// 音楽調節
+	if (CheckMouseClick(15, 268, 55, 308) == true) { PlayMusic_Update(1); }
+	else if (CheckMouseClick(60, 268, 100, 308) == true) { PlayMusic_Update(2); }
+	else if (CheckMouseClick(585, 268, 625, 308) == true) { PlayMusic_Update(3); }
 }
 
 static const int DRAW_X_START_POINT = -75;						// 画面外から登場させる
@@ -138,43 +157,46 @@ void Room_Draw()
 		int draw_x = DRAW_X_START_POINT;
 		for (int i = 0; i < 7; ++i) {
 			if (i < 3) {
-				DrawMI_L(music[(i + NowMusicNum) % MusicNum].image, draw_x);
+				DrawMI_L(music[(i + NowMusicNum+2) % MusicNum].image, draw_x);
 				draw_x += DRAW_WIDTH_S + DRAW_X_DISTANCE;
 			}
 			else if (i == 3) {
-				DrawModiGraph(draw_x, DRAW_Y_TOP, draw_x + 200, DRAW_Y_TOP, draw_x + 200, 225, draw_x, 225, music[(i + NowMusicNum) % MusicNum].image, TRUE);
+				DrawModiGraph(draw_x, DRAW_Y_TOP, draw_x + 200, DRAW_Y_TOP, draw_x + 200, 225, draw_x, 225, music[(i + NowMusicNum+2) % MusicNum].image, TRUE);
 				draw_x += 200 + DRAW_X_DISTANCE;
 			}
 			else {
-				DrawMI_R(music[(i + NowMusicNum) % MusicNum].image, draw_x);
+				DrawMI_R(music[(i + NowMusicNum+2) % MusicNum].image, draw_x);
 				draw_x += DRAW_WIDTH_S + DRAW_X_DISTANCE;
 			}
 		}
 	}
 	DrawGraph(0, 0, G_frame, TRUE);
-
-	DrawFormatString(300, 300, GetColor(0, 0, 0), "%s", music[NowMusicNum].name);
+	if (CheckMouseIn(15, 268, 55, 308) == true) { PlayMusic_Draw(1); }
+	else if (CheckMouseIn(60, 268, 100, 308) == true) { PlayMusic_Draw(2); }
+	else if (CheckMouseIn(585, 268, 625, 308) == true) { PlayMusic_Draw(3); }
+	else { PlayMusic_Draw(0); }
+	DrawFormatString(300, 300, GetColor(255, 255, 255), "%s", music[NowMusicNum].name);
 }
 
 // 音楽イメージ画像の変化描画
 bool flag = true;
 void ChangeMusicImageGraph() {
 	if (flag == true) { ChangeImage_frame++; flag = false; }
-	else if (FrameNum % 3 == 0) { flag = true; }
+	else if (FrameNum % 7 == 0) { flag = true; }
 	if (ChangeImage_for == 1) {
 		int draw_x = DRAW_X_START_POINT + 6 * (DRAW_X_DISTANCE + DRAW_WIDTH_S);
 		for (int i = 6; i >= 0; --i) {
 			if (i < 2) {
-				DrawMI_L(music[(i + NowMusicNum) % MusicNum].image, draw_x + ChangeImage_frame * 2);
+				DrawMI_L(music[(i + NowMusicNum + 2) % MusicNum].image, draw_x + ChangeImage_frame * 2);
 			}
 			else if (i == 2) {
-				DrawMI_L(music[(i + NowMusicNum) % MusicNum].image, draw_x + DRAW_X_DISTANCE * 2 * ChangeImage_frame / DRAW_FRAME_COST, Y_DEFAULT_DIFF * ChangeImage_frame / DRAW_FRAME_COST, (DRAW_WIDTH_L - DRAW_X_DISTANCE) * ChangeImage_frame / DRAW_FRAME_COST);
+				DrawMI_L(music[(i + NowMusicNum + 2) % MusicNum].image, draw_x + DRAW_X_DISTANCE * 2 * ChangeImage_frame / DRAW_FRAME_COST, Y_DEFAULT_DIFF * ChangeImage_frame / DRAW_FRAME_COST, (DRAW_WIDTH_L - DRAW_X_DISTANCE) * ChangeImage_frame / DRAW_FRAME_COST);
 			}
 			else if (i == 3) {
-				DrawMI_R(music[(i + NowMusicNum) % MusicNum].image, draw_x + DRAW_X_DISTANCE * 2 * ChangeImage_frame / DRAW_FRAME_COST, Y_DEFAULT_DIFF * abs(ChangeImage_frame - Y_DEFAULT_DIFF) / DRAW_FRAME_COST, (DRAW_WIDTH_L - DRAW_X_DISTANCE) * ChangeImage_frame / DRAW_FRAME_COST,TRUE);
+				DrawMI_R(music[(i + NowMusicNum + 2) % MusicNum].image, draw_x + DRAW_X_DISTANCE * 2 * ChangeImage_frame / DRAW_FRAME_COST, Y_DEFAULT_DIFF * abs(ChangeImage_frame - Y_DEFAULT_DIFF) / DRAW_FRAME_COST, (DRAW_WIDTH_L - DRAW_X_DISTANCE) * ChangeImage_frame / DRAW_FRAME_COST,TRUE);
 			}
 			else if (i > 3) {
-				DrawMI_R(music[(i + NowMusicNum) % MusicNum].image, draw_x + 150 + ChangeImage_frame * 2);
+				DrawMI_R(music[(i + NowMusicNum + 2) % MusicNum].image, draw_x + 150 + ChangeImage_frame * 2);
 			}
 			draw_x -= DRAW_X_DISTANCE + DRAW_WIDTH_S;
 		}
@@ -183,16 +205,16 @@ void ChangeMusicImageGraph() {
 		int draw_x = DRAW_X_START_POINT + 6 * (DRAW_X_DISTANCE + DRAW_WIDTH_S);
 		for (int i = 6; i >= 0; --i) {
 			if (i < 3) {
-				DrawMI_L(music[(i + NowMusicNum) % MusicNum].image, draw_x + -ChangeImage_frame * 2);
+				DrawMI_L(music[(i + NowMusicNum + 2) % MusicNum].image, draw_x + -ChangeImage_frame * 2);
 			}
 			else if (i == 3) {
-				DrawMI_L(music[(i + NowMusicNum) % MusicNum].image, draw_x + (DRAW_X_DISTANCE + DRAW_WIDTH_S) * -ChangeImage_frame / DRAW_FRAME_COST, Y_DEFAULT_DIFF * abs(ChangeImage_frame - Y_DEFAULT_DIFF) / DRAW_FRAME_COST, (DRAW_WIDTH_L - DRAW_X_DISTANCE) * -ChangeImage_frame / DRAW_FRAME_COST,TRUE);
+				DrawMI_L(music[(i + NowMusicNum + 2) % MusicNum].image, draw_x + (DRAW_X_DISTANCE + DRAW_WIDTH_S) * -ChangeImage_frame / DRAW_FRAME_COST, Y_DEFAULT_DIFF * abs(ChangeImage_frame - Y_DEFAULT_DIFF) / DRAW_FRAME_COST, (DRAW_WIDTH_L - DRAW_X_DISTANCE) * -ChangeImage_frame / DRAW_FRAME_COST,TRUE);
 			}
 			else if (i == 4) {
-				DrawMI_R(music[(i + NowMusicNum) % MusicNum].image, draw_x + (DRAW_X_DISTANCE + DRAW_WIDTH_S) * (abs(DRAW_X_START_POINT) -ChangeImage_frame) / DRAW_FRAME_COST, Y_DEFAULT_DIFF * ChangeImage_frame / DRAW_FRAME_COST, (DRAW_WIDTH_L - DRAW_X_DISTANCE) * -ChangeImage_frame / DRAW_FRAME_COST);
+				DrawMI_R(music[(i + NowMusicNum + 2) % MusicNum].image, draw_x + (DRAW_X_DISTANCE + DRAW_WIDTH_S) * (abs(DRAW_X_START_POINT) -ChangeImage_frame) / DRAW_FRAME_COST, Y_DEFAULT_DIFF * ChangeImage_frame / DRAW_FRAME_COST, (DRAW_WIDTH_L - DRAW_X_DISTANCE) * -ChangeImage_frame / DRAW_FRAME_COST);
       }
 			else if (i > 4) {
-				DrawMI_R(music[(i + NowMusicNum) % MusicNum].image, draw_x + 150 + -ChangeImage_frame * 2);
+				DrawMI_R(music[(i + NowMusicNum + 2) % MusicNum].image, draw_x + 150 + -ChangeImage_frame * 2);
 			}
 			draw_x -= DRAW_X_DISTANCE + DRAW_WIDTH_S;
 		}
@@ -212,36 +234,63 @@ void ChangeMusicImageGraph() {
 			}
 		}
 		ChangeImage_for = 0;
+		Music_Position = 0;
+		Music_TotalTime = -1;
+		Music_NowTime = -1;
 	}
 }
 
-// 音楽再生
-// 0:新しく再生	1:一時停止	2:途中から再生	3:そのまま再生
-int Music_Position = 0;
+// 音楽再生（更新）
+// 1:再生	2:一時停止	3:停止
 void PlayMusic_Update(int flag)
 {
 	switch (flag)
 	{
-	case 0:
-		StopSound();
+	case 1:	// 再生
+		Music_TotalTime = 0;
+		Music_NowTime = 0;
+		if (Music_Position == 0) {	// 最初から
+			PlaySoundMem(music[NowMusicNum].sound, DX_PLAYTYPE_LOOP, TRUE);
+			Music_Position = GetSoundCurrentPosition(music[NowMusicNum].sound);
+			break;
+		}
+		else {	// 途中から
+			SetSoundCurrentPosition(Music_Position, music[NowMusicNum].sound);
+			PlaySoundMem(music[NowMusicNum].sound, DX_PLAYTYPE_LOOP, FALSE);
+			Music_Position = GetSoundCurrentPosition(music[NowMusicNum].sound);
+			break;
+		}
+
+	case 2:	// 一時停止
+		Music_Position = GetSoundCurrentPosition(music[NowMusicNum].sound);
+		StopSoundMem(music[NowMusicNum].sound);
+		break;
+		
+	case 3:	// 停止
+		StopSoundMem(music[NowMusicNum].sound);
 		Music_Position = 0;
-		PlaySoundMem(music[NowMusicNum].sound, DX_PLAYTYPE_LOOP, TRUE);
-		Music_Position = GetSoundCurrentPosition(music[NowMusicNum].sound);
-		break;
-
-	case 1:
-		Music_Position = GetSoundCurrentPosition(music[NowMusicNum].sound);
-		StopSound();
-		break;
-
-	case 2:
-		SetSoundCurrentPosition(Music_Position, music[NowMusicNum].sound);
-		PlaySoundMem(music[NowMusicNum].sound, DX_PLAYTYPE_LOOP, FALSE);
-		Music_Position = GetSoundCurrentPosition(music[NowMusicNum].sound);
-		break;
-
-	case 3:
-		Music_Position = GetSoundCurrentPosition(music[NowMusicNum].sound);
+		Music_TotalTime = -1;
+		Music_NowTime = -1;
 		break;
 	}
+}
+
+// 音楽再生（描画）
+// 0:どこもinしていない	1:再生にin	2:一時停止にin	3:停止にin
+void PlayMusic_Draw(int flag)
+{
+	// 再生バー
+	DrawRoundRect(110, 278, 575, 300, 3, 3, GetColor(32, 32, 32), TRUE);
+	if (Music_NowTime != -1 && Music_TotalTime != -1) {
+		Music_TotalTime = GetSoundTotalTime(music[NowMusicNum].sound);
+		Music_NowTime = GetSoundCurrentTime(music[NowMusicNum].sound);
+		DrawRoundRect(112, 281, 112 + 459 * (Music_NowTime / Music_TotalTime), 297, 3, 3, GetColor(32, 110, 32), TRUE);
+	}
+	// コントロールボタン
+	if (flag != 1) { DrawGraph(15, 268, G_button[0], TRUE); }
+	if (flag != 2) { DrawGraph(60, 268, G_button[2], TRUE); }
+	if (flag != 3) { DrawGraph(585, 268, G_button[1], TRUE); }
+	if (flag == 1) { DrawGraph(15, 268, G_button[3], TRUE); }
+	if (flag == 2) { DrawGraph(60, 268, G_button[5], TRUE); }
+	if (flag == 3) { DrawGraph(585, 268, G_button[4], TRUE); }
 }
