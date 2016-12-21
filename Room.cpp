@@ -9,7 +9,7 @@
 // 関数プロトタイプ宣言
 void ChangeMusicImageGraph();
 void PlayMusic_Update(int flag);
-void PlayMusic_Draw();
+void PlayMusic_Draw(int flag);
 
 // 構造体
 typedef struct Music_s {
@@ -22,7 +22,7 @@ typedef struct Music_s {
 
 // グローバル変数
 Music_data music[MAX_LOAD_MUSIC];
-int G_main, G_frame, G_button[3];
+int G_main, G_frame, G_button[6];
 int NowMusicNum = 0;
 int ChangeImage_frame = 0;
 int FirstTime, NowTime;
@@ -78,7 +78,7 @@ void Room_Init()
 	FileRead_close(FP_music_list);
 	G_main = LoadGraph("data\\graph\\main.png");
 	G_frame = LoadGraph("data\\graph\\frame.png");
-	LoadDivGraph("data\\graph\\button.png", 3, 3, 1, 40, 40, G_button);
+	LoadDivGraph("data\\graph\\button.png", 6, 3, 2, 40, 40, G_button);
 	FirstTime = GetNowCount();
 }
 
@@ -171,7 +171,7 @@ void Room_Draw()
 		}
 	}
 	DrawGraph(0, 0, G_frame, TRUE);
-	PlayMusic_Draw();
+	PlayMusic_Draw(0);
 	DrawFormatString(300, 300, GetColor(255, 255, 255), "%s", music[NowMusicNum].name);
 }
 
@@ -273,7 +273,8 @@ void PlayMusic_Update(int flag)
 }
 
 // 音楽再生（描画）
-void PlayMusic_Draw()
+// 0:どこもinしていない	1:再生にin	2:一時停止にin	3:停止にin
+void PlayMusic_Draw(int flag)
 {
 	// 再生バー
 	DrawRoundRect(110, 278, 575, 300, 3, 3, GetColor(32, 32, 32), TRUE);
@@ -286,4 +287,7 @@ void PlayMusic_Draw()
 	DrawGraph(15, 268, G_button[0], TRUE);
 	DrawGraph(60, 268, G_button[2], TRUE);
 	DrawGraph(585, 268, G_button[1], TRUE);
+	if (flag == 1) { DrawGraph(15, 268, G_button[3], TRUE); }
+	if (flag == 2) { DrawGraph(60, 268, G_button[5], TRUE); }
+	if (flag == 3) { DrawGraph(585, 268, G_button[4], TRUE); }
 }
