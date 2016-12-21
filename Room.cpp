@@ -172,9 +172,9 @@ void Room_Draw()
 	}
 	DrawGraph(0, 0, G_frame, TRUE);
 	if (CheckMouseIn(15, 268, 55, 308) == true) { PlayMusic_Draw(1); }
-	else if (CheckMouseIn(60, 268, 100, 308) == true) { PlayMusic_Update(2); }
-	else if (CheckMouseIn(585, 268, 625, 308) == true) { PlayMusic_Update(3); }
-	PlayMusic_Draw(0);
+	else if (CheckMouseIn(60, 268, 100, 308) == true) { PlayMusic_Draw(2); }
+	else if (CheckMouseIn(585, 268, 625, 308) == true) { PlayMusic_Draw(3); }
+	else { PlayMusic_Draw(0); }
 	DrawFormatString(300, 300, GetColor(255, 255, 255), "%s", music[NowMusicNum].name);
 }
 
@@ -287,9 +287,9 @@ void PlayMusic_Draw(int flag)
 		DrawRoundRect(112, 281, 112 + 459 * (Music_NowTime / Music_TotalTime), 297, 3, 3, GetColor(32, 110, 32), TRUE);
 	}
 	// コントロールボタン
-	DrawGraph(15, 268, G_button[0], TRUE);
-	DrawGraph(60, 268, G_button[2], TRUE);
-	DrawGraph(585, 268, G_button[1], TRUE);
+	if (flag != 1) { DrawGraph(15, 268, G_button[0], TRUE); }
+	if (flag != 2) { DrawGraph(60, 268, G_button[2], TRUE); }
+	if (flag != 3) { DrawGraph(585, 268, G_button[1], TRUE); }
 	if (flag == 1) { DrawGraph(15, 268, G_button[3], TRUE); }
 	if (flag == 2) { DrawGraph(60, 268, G_button[5], TRUE); }
 	if (flag == 3) { DrawGraph(585, 268, G_button[4], TRUE); }
