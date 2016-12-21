@@ -1,11 +1,13 @@
 #include "DxLib.h"
 #include "Room.h"
 #include "Keyboard.h"
+#include "resource.h"
 
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	SetOutApplicationLogValidFlag(FALSE);
 	ChangeWindowMode(TRUE);
 	SetMainWindowText("MusicRoom v1.0");
+	SetWindowIconID(IDI_ICON1);
 	SetGraphMode(640, 640, 32);
 	SetWindowSize(640, 640);
 	SetWindowStyleMode(2);
