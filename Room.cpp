@@ -13,7 +13,7 @@ void PlayMusic_Draw(int flag);
 
 // 構造体
 typedef struct Music_s {
-	char name[100];
+	char name[10000];
 	int image;
 	char creator[15];
 	char comment[MUSIC_COMMENT_HEIGHT][MUSIC_COMMENT_WEIGHT];
@@ -39,7 +39,7 @@ float Music_NowTime = 0;
 void Room_Init()
 {
 	FrameNum = 0;
-	TCHAR Filename[50];
+	TCHAR Filename[10005];
 	bool flag = false;
 	int FP_music_list = FileRead_open("data\\music_list.txt");
 	FileRead_gets(MusicNumStr, sizeof(MusicNumStr), FP_music_list);
