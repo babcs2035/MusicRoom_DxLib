@@ -308,7 +308,6 @@ void PlayMusic_Update(int flag)
 		}
 
 	case 2:	// 一時停止
-		ああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああ
 		Music_Position = GetSoundCurrentPosition(music[NowMusicNum].sound);
 		StopSoundMem(music[NowMusicNum].sound);
 		break;
@@ -329,7 +328,8 @@ void PlayMusic_Draw(int flag)
 	// 再生バー
 	DrawRoundRect(110, 278, 575, 300, 3, 3, GetColor(32, 32, 32), TRUE);
 	if (Music_NowTime != -1 && Music_TotalTime != -1
-		&& ChangeImage_flag == false) {
+		&& ChangeImage_flag == false)
+	{
 		Music_TotalTime = GetSoundTotalTime(music[NowMusicNum].sound);
 		Music_NowTime = GetSoundCurrentTime(music[NowMusicNum].sound);
 		DrawRoundRect(112, 281, 112 + 459 * (Music_NowTime / Music_TotalTime), 297, 3, 3, GetColor(32, 110, 32), TRUE);
