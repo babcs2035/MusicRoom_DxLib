@@ -22,7 +22,7 @@ typedef struct Music_s {
 
 // グローバル変数
 Music_data music[MAX_LOAD_MUSIC];
-int G_main, G_frame, G_button[6];
+int G_main, G_frame, G_button[9];
 int NowMusicNum = 0;
 int ChangeImage_frame = 0;
 int FirstTime, NowTime;
@@ -32,8 +32,8 @@ bool ChangeImage_flag = false;
 int ChangeImage_for = 0;
 int FrameNum = 0;
 int Music_Position = 0;
-float Music_TotalTime = 0;
-float Music_NowTime = 0;
+float Music_TotalTime = -1;
+float Music_NowTime = -1;
 
 // 初期化
 void Room_Init()
@@ -86,7 +86,8 @@ void Room_Init()
 	FileRead_close(FP_music_list);
 	G_main = LoadGraph("data\\graph\\system\\main.png");
 	G_frame = LoadGraph("data\\graph\\system\\frame.png");
-	LoadDivGraph("data\\graph\\system\\button.png", 6, 3, 2, 40, 40, G_button);
+	LoadDivGraph("data\\graph\\system\\button.png", 9, 3, 3, 40, 40, G_button);
+	G_button[8] = LoadGraph("data\\graph\\system\\time.png");
 	FirstTime = GetNowCount();
 }
 
@@ -182,6 +183,7 @@ void Room_Draw()
 	if (CheckMouseIn(15, 268, 55, 308) == true) { PlayMusic_Draw(1); }
 	else if (CheckMouseIn(60, 268, 100, 308) == true) { PlayMusic_Draw(2); }
 	else if (CheckMouseIn(585, 268, 625, 308) == true) { PlayMusic_Draw(3); }
+	else if (CheckMouseIn(95 + 459 * (Music_NowTime / Music_TotalTime), 268, 95 + 459 * (Music_NowTime / Music_TotalTime) + 40, 308) == true) { PlayMusic_Draw(4); }
 	else { PlayMusic_Draw(0); }
 	DrawFormatString(300, 300, GetColor(255, 255, 255), "%s", music[NowMusicNum].name);
 }
@@ -284,15 +286,21 @@ void PlayMusic_Update(int flag)
 }
 
 // 音楽再生（描画）
-// 0:どこもinしていない	1:再生にin	2:一時停止にin	3:停止にin
+// 0:どこもinしていない	1:再生にin	2:一時停止にin	3:停止にin	4:再生場所ボタン追加
 void PlayMusic_Draw(int flag)
 {
 	// 再生バー
 	DrawRoundRect(110, 278, 575, 300, 3, 3, GetColor(32, 32, 32), TRUE);
-	if (Music_NowTime != -1 && Music_TotalTime != -1) {
+	if (Music_NowTime != -1 && Music_TotalTime != -1
+		&& ChangeImage_flag == false) {
 		Music_TotalTime = GetSoundTotalTime(music[NowMusicNum].sound);
 		Music_NowTime = GetSoundCurrentTime(music[NowMusicNum].sound);
 		DrawRoundRect(112, 281, 112 + 459 * (Music_NowTime / Music_TotalTime), 297, 3, 3, GetColor(32, 110, 32), TRUE);
+		DrawGraph(95 + 459 * (Music_NowTime / Music_TotalTime), 268, G_button[6], TRUE);
+	}
+	else
+	{
+		DrawGraph(95, 268, G_button[7], TRUE);
 	}
 	// コントロールボタン
 	if (flag != 1) { DrawGraph(15, 268, G_button[0], TRUE); }
@@ -301,4 +309,11 @@ void PlayMusic_Draw(int flag)
 	if (flag == 1) { DrawGraph(15, 268, G_button[3], TRUE); }
 	if (flag == 2) { DrawGraph(60, 268, G_button[5], TRUE); }
 	if (flag == 3) { DrawGraph(585, 268, G_button[4], TRUE); }
+	if (flag == 4)
+	{
+		int minute = Music_NowTime / 1000 / 60;
+		int second = Music_NowTime / 1000 - minute * 60;
+		DrawGraph(75 + 459 * (Music_NowTime / Music_TotalTime), 300, G_button[8], TRUE);
+		DrawFormatString(95 + 459 * (Music_NowTime / Music_TotalTime), 318, GetColor(0, 0, 0), "%02d:%02d", minute, second);
+	}
 }
