@@ -44,7 +44,8 @@ void Room_Init()
 	int FP_music_list = FileRead_open("data\\music_list.txt");
 	FileRead_gets(MusicNumStr, sizeof(MusicNumStr), FP_music_list);
 	MusicNum = atoi(MusicNumStr);
-	for (int i = 0; i < MusicNum; ++i) {
+	for (int i = 0; i < MusicNum; ++i)
+	{
 		FileRead_gets(music[i].name, sizeof(music[i].name), FP_music_list);
 		music[i].name[strlen(music[i].name)] = '\0';
 		sprintfDx(Filename, "data\\graph\\%s.png", music[i].name);
@@ -53,18 +54,23 @@ void Room_Init()
 		sprintf(Filename, "data\\comment\\%s.txt", music[i].name);
 		int FP_comment = FileRead_open(Filename);
 		FileRead_gets(music[i].creator, sizeof(music[i].creator), FP_comment);
-		for (int j = 0; FileRead_eof(FP_comment) == FALSE && j < sizeof(music[i].comment[j]); ++j) {
+		for (int j = 0; FileRead_eof(FP_comment) == FALSE && j < sizeof(music[i].comment[j]); ++j)
+		{
 			static_assert(sizeof(music[i].comment[j]) == 25, "");
 			music[i].comment[j][23] = '\0';
-			if (flag == false) {
+			if (flag == false)
+			{
 				FileRead_gets(music[i].comment[j], sizeof(music[i].comment[j]), FP_comment);
 			}
-			if (flag == true) {
+			if (flag == true)
+			{
 				FileRead_gets(&music[i].comment[j][1], sizeof(music[i].comment[j]) - 1, FP_comment);
 			}
 			char temp[3] = { music[i].comment[j][23], '\0', '\0' };
-			if (MultiByteCharCheck(temp, DX_CHARSET_SHFTJIS) == TRUE) {
-				if (j < MUSIC_COMMENT_HEIGHT - 1) {
+			if (MultiByteCharCheck(temp, DX_CHARSET_SHFTJIS) == TRUE)
+			{
+				if (j < MUSIC_COMMENT_HEIGHT - 1)
+				{
 					music[i].comment[j + 1][0] = music[i].comment[j][23];
 					music[i].comment[j][23] = '\0';
 					flag = true;
@@ -74,11 +80,13 @@ void Room_Init()
 		FileRead_close(FP_comment);
 		sprintf(Filename, "data\\music\\%s.mp3", music[i].name);
 		music[i].sound = LoadSoundMem(Filename);
-		if (music[i].sound == -1) {
+		if (music[i].sound == -1)
+		{
 			sprintf(Filename, "data\\music\\%s.ogg", music[i].name);
 			music[i].sound = LoadSoundMem(Filename);
 		}
-		if (music[i].sound == -1) {
+		if (music[i].sound == -1)
+		{
 			sprintf(Filename, "data\\music\\%s.wav", music[i].name);
 			music[i].sound = LoadSoundMem(Filename);
 		}
@@ -97,7 +105,8 @@ void Room_Update()
 	FrameNum++;
 	// 音楽選択
 	NowTime = GetNowCount() - FirstTime;
-	if (Keyboard_Get(KEY_INPUT_LEFT) != 0 && ChangeImage_flag == false) {
+	if (Keyboard_Get(KEY_INPUT_LEFT) != 0 && ChangeImage_flag == false)
+	{
 		StopSoundMem(music[NowMusicNum].sound);
 		Music_Position = 0;
 		Music_TotalTime = 0;
@@ -105,7 +114,8 @@ void Room_Update()
 		ChangeImage_for = 1;
 		ChangeImage_flag = true;
 	}
-	else if (Keyboard_Get(KEY_INPUT_RIGHT) != 0 && ChangeImage_flag == false) {
+	else if (Keyboard_Get(KEY_INPUT_RIGHT) != 0 && ChangeImage_flag == false)
+	{
 		StopSoundMem(music[NowMusicNum].sound);
 		Music_Position = 0;
 		Music_TotalTime = 0;
@@ -159,21 +169,27 @@ void Room_Draw()
 {
 	// 画像
 	DrawGraph(0, 0, G_main, TRUE);
-	if (ChangeImage_flag == true) {
+	if (ChangeImage_flag == true)
+	{
 		ChangeMusicImageGraph();
 	}
-	else if (ChangeImage_flag == false) {
+	else if (ChangeImage_flag == false)
+	{
 		int draw_x = DRAW_X_START_POINT;
-		for (int i = 0; i < 7; ++i) {
-			if (i < 3) {
+		for (int i = 0; i < 7; ++i)
+		{
+			if (i < 3)
+			{
 				DrawMI_L(music[(MusicNum - (3 - i) + NowMusicNum) % MusicNum].image, draw_x);
 				draw_x += DRAW_WIDTH_S + DRAW_X_DISTANCE;
 			}
-			else if (i == 3) {
+			else if (i == 3)
+			{
 				DrawModiGraph(draw_x, DRAW_Y_TOP, draw_x + 200, DRAW_Y_TOP, draw_x + 200, 225, draw_x, 225, music[(MusicNum - (3 - i) + NowMusicNum) % MusicNum].image, TRUE);
 				draw_x += 200 + DRAW_X_DISTANCE;
 			}
-			else {
+			else
+			{
 				DrawMI_R(music[(MusicNum - (3 - i) + NowMusicNum) % MusicNum].image, draw_x);
 				draw_x += DRAW_WIDTH_S + DRAW_X_DISTANCE;
 			}
@@ -190,56 +206,74 @@ void Room_Draw()
 
 // 音楽イメージ画像の変化描画
 bool flag = true;
-void ChangeMusicImageGraph() {
+void ChangeMusicImageGraph()
+{
 	if (flag == true) { ChangeImage_frame++; flag = false; }
 	else if (FrameNum % 7 == 0) { flag = true; }
-	if (ChangeImage_for == 1) {
+	if (ChangeImage_for == 1)
+	{
 		int draw_x = DRAW_X_START_POINT + 6 * (DRAW_X_DISTANCE + DRAW_WIDTH_S);
-		for (int i = 6; i >= 0; --i) {
-			if (i < 2) {
+		for (int i = 6; i >= 0; --i)
+		{
+			if (i < 2)
+			{
 				DrawMI_L(music[(MusicNum - (3 - i) + NowMusicNum) % MusicNum].image, draw_x + ChangeImage_frame * 2);
 			}
-			else if (i == 2) {
+			else if (i == 2)
+			{
 				DrawMI_L(music[(MusicNum - (3 - i) + NowMusicNum) % MusicNum].image, draw_x + DRAW_X_DISTANCE * 2 * ChangeImage_frame / DRAW_FRAME_COST, Y_DEFAULT_DIFF * ChangeImage_frame / DRAW_FRAME_COST, (DRAW_WIDTH_L - DRAW_X_DISTANCE) * ChangeImage_frame / DRAW_FRAME_COST);
 			}
-			else if (i == 3) {
+			else if (i == 3)
+			{
 				DrawMI_R(music[(MusicNum - (3 - i) + NowMusicNum) % MusicNum].image, draw_x + DRAW_X_DISTANCE * 2 * ChangeImage_frame / DRAW_FRAME_COST, Y_DEFAULT_DIFF * abs(ChangeImage_frame - Y_DEFAULT_DIFF) / DRAW_FRAME_COST, (DRAW_WIDTH_L - DRAW_X_DISTANCE) * ChangeImage_frame / DRAW_FRAME_COST,TRUE);
 			}
-			else if (i > 3) {
+			else if (i > 3)
+			{
 				DrawMI_R(music[(MusicNum - (3 - i) + NowMusicNum) % MusicNum].image, draw_x + 150 + ChangeImage_frame * 2);
 			}
 			draw_x -= DRAW_X_DISTANCE + DRAW_WIDTH_S;
 		}
 	}
-	else {
+	else
+	{
 		int draw_x = DRAW_X_START_POINT + 6 * (DRAW_X_DISTANCE + DRAW_WIDTH_S);
-		for (int i = 6; i >= 0; --i) {
-			if (i < 3) {
+		for (int i = 6; i >= 0; --i)
+		{
+			if (i < 3)
+			{
 				DrawMI_L(music[(MusicNum - (3 - i) + NowMusicNum) % MusicNum].image, draw_x + -ChangeImage_frame * 2);
 			}
-			else if (i == 3) {
+			else if (i == 3)
+			{
 				DrawMI_L(music[(MusicNum - (3 - i) + NowMusicNum) % MusicNum].image, draw_x + (DRAW_X_DISTANCE + DRAW_WIDTH_S) * -ChangeImage_frame / DRAW_FRAME_COST, Y_DEFAULT_DIFF * abs(ChangeImage_frame - Y_DEFAULT_DIFF) / DRAW_FRAME_COST, (DRAW_WIDTH_L - DRAW_X_DISTANCE) * -ChangeImage_frame / DRAW_FRAME_COST,TRUE);
 			}
-			else if (i == 4) {
+			else if (i == 4)
+			{
 				DrawMI_R(music[(MusicNum - (3 - i) + NowMusicNum) % MusicNum].image, draw_x + (DRAW_X_DISTANCE + DRAW_WIDTH_S) * (abs(DRAW_X_START_POINT) -ChangeImage_frame) / DRAW_FRAME_COST, Y_DEFAULT_DIFF * ChangeImage_frame / DRAW_FRAME_COST, (DRAW_WIDTH_L - DRAW_X_DISTANCE) * -ChangeImage_frame / DRAW_FRAME_COST);
-      }
-			else if (i > 4) {
+			}
+			else if (i > 4)
+			{
 				DrawMI_R(music[(MusicNum - (3 - i) + NowMusicNum) % MusicNum].image, draw_x + 150 + -ChangeImage_frame * 2);
 			}
 			draw_x -= DRAW_X_DISTANCE + DRAW_WIDTH_S;
 		}
 	}
-	if (ChangeImage_frame >= DRAW_FRAME_COST) {
+	if (ChangeImage_frame >= DRAW_FRAME_COST)
+	{
 		ChangeImage_flag = false; ChangeImage_frame = 0;
-		if (ChangeImage_for == 1) {
+		if (ChangeImage_for == 1)
+		{
 			NowMusicNum--;
-			if (NowMusicNum < 0) {
+			if (NowMusicNum < 0)
+			{
 				NowMusicNum = MusicNum - 1;
 			}
 		}
-		else {
+		else
+		{
 			NowMusicNum++;
-			if (NowMusicNum >= MusicNum) {
+			if (NowMusicNum >= MusicNum)
+			{
 				NowMusicNum = 0;
 			}
 		}
@@ -259,12 +293,14 @@ void PlayMusic_Update(int flag)
 	case 1:	// 再生
 		Music_TotalTime = 0;
 		Music_NowTime = 0;
-		if (Music_Position == 0) {	// 最初から
+		if (Music_Position == 0)
+		{	// 最初から
 			PlaySoundMem(music[NowMusicNum].sound, DX_PLAYTYPE_LOOP, TRUE);
 			Music_Position = GetSoundCurrentPosition(music[NowMusicNum].sound);
 			break;
 		}
-		else {	// 途中から
+		else
+		{	// 途中から
 			SetSoundCurrentPosition(Music_Position, music[NowMusicNum].sound);
 			PlaySoundMem(music[NowMusicNum].sound, DX_PLAYTYPE_LOOP, FALSE);
 			Music_Position = GetSoundCurrentPosition(music[NowMusicNum].sound);
@@ -272,6 +308,7 @@ void PlayMusic_Update(int flag)
 		}
 
 	case 2:	// 一時停止
+		ああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああ
 		Music_Position = GetSoundCurrentPosition(music[NowMusicNum].sound);
 		StopSoundMem(music[NowMusicNum].sound);
 		break;
