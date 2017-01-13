@@ -22,7 +22,7 @@ typedef struct Music_s {
 
 // グローバル変数
 Music_data music[MAX_LOAD_MUSIC];
-int G_main, G_frame, G_button[6];
+int G_main, G_frame, G_button[7];
 int NowMusicNum = 0;
 int ChangeImage_frame = 0;
 int FirstTime, NowTime;
@@ -86,7 +86,7 @@ void Room_Init()
 	FileRead_close(FP_music_list);
 	G_main = LoadGraph("data\\graph\\system\\main.png");
 	G_frame = LoadGraph("data\\graph\\system\\frame.png");
-	LoadDivGraph("data\\graph\\system\\button.png", 6, 3, 2, 40, 40, G_button);
+	LoadDivGraph("data\\graph\\system\\button.png", 7, 3, 3, 40, 40, G_button);
 	FirstTime = GetNowCount();
 }
 
@@ -293,6 +293,7 @@ void PlayMusic_Draw(int flag)
 		Music_TotalTime = GetSoundTotalTime(music[NowMusicNum].sound);
 		Music_NowTime = GetSoundCurrentTime(music[NowMusicNum].sound);
 		DrawRoundRect(112, 281, 112 + 459 * (Music_NowTime / Music_TotalTime), 297, 3, 3, GetColor(32, 110, 32), TRUE);
+		DrawGraph(95 + 459 * (Music_NowTime / Music_TotalTime), 268, G_button[6], TRUE);
 	}
 	// コントロールボタン
 	if (flag != 1) { DrawGraph(15, 268, G_button[0], TRUE); }
