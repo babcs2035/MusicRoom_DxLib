@@ -31,7 +31,6 @@ int MusicNum;
 bool ChangeImage_flag = false;
 int ChangeImage_for = 0;
 int FrameNum = 0;
-int Music_Position = 0;
 float Music_TotalTime = -1;
 float Music_NowTime = -1;
 
@@ -108,7 +107,6 @@ void Room_Update()
 	if (Keyboard_Get(KEY_INPUT_LEFT) != 0 && ChangeImage_flag == false)
 	{
 		StopSoundMem(music[NowMusicNum].sound);
-		Music_Position = 0;
 		Music_TotalTime = 0;
 		Music_NowTime = 0;
 		ChangeImage_for = 1;
@@ -117,7 +115,6 @@ void Room_Update()
 	else if (Keyboard_Get(KEY_INPUT_RIGHT) != 0 && ChangeImage_flag == false)
 	{
 		StopSoundMem(music[NowMusicNum].sound);
-		Music_Position = 0;
 		Music_TotalTime = 0;
 		Music_NowTime = 0;
 		ChangeImage_for = 2;
@@ -128,6 +125,7 @@ void Room_Update()
 	if (CheckMouseClick(15, 268, 55, 308) == true) { PlayMusic_Update(1); }
 	else if (CheckMouseClick(60, 268, 100, 308) == true) { PlayMusic_Update(2); }
 	else if (CheckMouseClick(585, 268, 625, 308) == true) { PlayMusic_Update(3); }
+	else if (CheckMouseClick(110, 278, 575, 300) == true) { PlayMusic_Update(4); }
 }
 
 static const int DRAW_X_START_POINT = -75;						// 画面外から登場させる
@@ -279,45 +277,54 @@ void ChangeMusicImageGraph()
 			}
 		}
 		ChangeImage_for = 0;
-		Music_Position = 0;
 		Music_TotalTime = -1;
 		Music_NowTime = -1;
 	}
 }
 
 // 音楽再生（更新）
-// 1:再生	2:一時停止	3:停止
+// 1:再生	2:一時停止	3:停止	4:再生位置変更
 void PlayMusic_Update(int flag)
 {
+	// 再生バー
+	if (CheckSoundMem(music[NowMusicNum].sound) == true && flag == 4)
+	{
+		int clicked_x, clicked_y;
+		GetMousePoint(&clicked_x, &clicked_y);
+		Music_NowTime = Music_TotalTime*(((float)clicked_x - (float)110) / (float)465);
+	}
+
+	// コントロールボタン
 	switch (flag)
 	{
 	case 1:	// 再生
-		Music_TotalTime = 0;
-		Music_NowTime = 0;
-		if (Music_Position == 0)
+		if (Music_NowTime == -1)
 		{	// 最初から
 			PlaySoundMem(music[NowMusicNum].sound, DX_PLAYTYPE_LOOP, TRUE);
-			Music_Position = GetSoundCurrentPosition(music[NowMusicNum].sound);
+			Music_NowTime = GetSoundCurrentTime(music[NowMusicNum].sound);
 			break;
 		}
 		else
 		{	// 途中から
-			SetSoundCurrentPosition(Music_Position, music[NowMusicNum].sound);
+			SetSoundCurrentTime(Music_NowTime, music[NowMusicNum].sound);
 			PlaySoundMem(music[NowMusicNum].sound, DX_PLAYTYPE_LOOP, FALSE);
-			Music_Position = GetSoundCurrentPosition(music[NowMusicNum].sound);
+			Music_NowTime = GetSoundCurrentTime(music[NowMusicNum].sound);
 			break;
 		}
 
 	case 2:	// 一時停止
-		Music_Position = GetSoundCurrentPosition(music[NowMusicNum].sound);
+		Music_NowTime = GetSoundCurrentTime(music[NowMusicNum].sound);
 		StopSoundMem(music[NowMusicNum].sound);
 		break;
 		
 	case 3:	// 停止
 		StopSoundMem(music[NowMusicNum].sound);
-		Music_Position = 0;
 		Music_TotalTime = -1;
 		Music_NowTime = -1;
+		break;
+
+	case 4:	// 再生位置変更
+		SetSoundCurrentTime(Music_NowTime, music[NowMusicNum].sound);
 		break;
 	}
 }
@@ -328,18 +335,24 @@ void PlayMusic_Draw(int flag)
 {
 	// 再生バー
 	DrawRoundRect(110, 278, 575, 300, 3, 3, GetColor(32, 32, 32), TRUE);
-	if (Music_NowTime != -1 && Music_TotalTime != -1
-		&& ChangeImage_flag == false)
+	if (ChangeImage_flag == false)
 	{
-		Music_TotalTime = GetSoundTotalTime(music[NowMusicNum].sound);
-		Music_NowTime = GetSoundCurrentTime(music[NowMusicNum].sound);
-		DrawRoundRect(112, 281, 112 + 459 * (Music_NowTime / Music_TotalTime), 297, 3, 3, GetColor(32, 110, 32), TRUE);
-		DrawGraph(95 + 459 * (Music_NowTime / Music_TotalTime), 268, G_button[6], TRUE);
+		if (CheckSoundMem(music[NowMusicNum].sound) == 1)
+		{
+			Music_TotalTime = GetSoundTotalTime(music[NowMusicNum].sound);
+			Music_NowTime = GetSoundCurrentTime(music[NowMusicNum].sound);
+		}
+		if (Music_NowTime != -1 && Music_TotalTime != -1)
+		{
+			DrawRoundRect(112, 281, 112 + 459 * (Music_NowTime / Music_TotalTime), 297, 3, 3, GetColor(32, 110, 32), TRUE);
+			DrawGraph(95 + 459 * (Music_NowTime / Music_TotalTime), 268, G_button[6], TRUE);
+		}
+		else
+		{
+			DrawGraph(95, 268, G_button[7], TRUE);
+		}
 	}
-	else
-	{
-		DrawGraph(95, 268, G_button[7], TRUE);
-	}
+
 	// コントロールボタン
 	if (flag != 1) { DrawGraph(15, 268, G_button[0], TRUE); }
 	if (flag != 2) { DrawGraph(60, 268, G_button[2], TRUE); }
