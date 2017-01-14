@@ -200,6 +200,7 @@ void Room_Draw()
 	else if (CheckMouseIn(60, 268, 100, 308) == true) { PlayMusic_Draw(2); }
 	else if (CheckMouseIn(585, 268, 625, 308) == true) { PlayMusic_Draw(3); }
 	else if (CheckMouseIn(95 + 459 * (Music_NowTime / Music_TotalTime), 268, 95 + 459 * (Music_NowTime / Music_TotalTime) + 40, 308) == true) { PlayMusic_Draw(4); }
+	else if (CheckMouseIn(110, 278, 575, 300) == true) { PlayMusic_Draw(5); }
 	else { PlayMusic_Draw(0); }
 	DrawFormatString(300, 300, GetColor(255, 255, 255), "%s", music[NowMusicNum].name);
 }
@@ -322,7 +323,7 @@ void PlayMusic_Update(int flag)
 }
 
 // 音楽再生（描画）
-// 0:どこもinしていない	1:再生にin	2:一時停止にin	3:停止にin	4:再生場所ボタン追加
+// 0:どこもinしていない	1:再生にin	2:一時停止にin	3:停止にin	4:再生場所ボタン追加	5:長さ表示
 void PlayMusic_Draw(int flag)
 {
 	// 再生バー
@@ -352,5 +353,11 @@ void PlayMusic_Draw(int flag)
 		int second = Music_NowTime / 1000 - minute * 60;
 		DrawGraph(75 + 459 * (Music_NowTime / Music_TotalTime), 300, G_button[8], TRUE);
 		DrawFormatString(95 + 459 * (Music_NowTime / Music_TotalTime), 318, GetColor(0, 0, 0), "%02d:%02d", minute, second);
+	}
+	if (flag == 4 || flag == 5)
+	{
+		int minute = Music_TotalTime / 1000 / 60;
+		int second = Music_TotalTime / 1000 - minute * 60;
+		DrawFormatString(525, 282, GetColor(255, 255, 255), "%02d:%02d", minute, second);
 	}
 }
