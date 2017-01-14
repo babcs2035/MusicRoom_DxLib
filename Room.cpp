@@ -364,8 +364,8 @@ void PlayMusic_Draw(int flag)
 	{
 		int minute = Music_NowTime / 1000 / 60;
 		int second = Music_NowTime / 1000 - minute * 60;
-		DrawGraph(75 + 459 * (Music_NowTime / Music_TotalTime), 300, G_button[8], TRUE);
-		DrawFormatString(95 + 459 * (Music_NowTime / Music_TotalTime), 318, GetColor(0, 0, 0), "%02d:%02d", minute, second);
+		DrawGraph(75 + 459 * (Music_NowTime / Music_TotalTime), 238, G_button[8], TRUE);
+		DrawFormatString(93 + 459 * (Music_NowTime / Music_TotalTime), 246, GetColor(0, 0, 0), "%02d:%02d", minute, second);
 	}
 	if (flag == 4 || flag == 5)
 	{
