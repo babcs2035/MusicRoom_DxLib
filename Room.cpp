@@ -33,6 +33,8 @@ int ChangeImage_for = 0;
 int FrameNum = 0;
 float Music_TotalTime = -1;
 float Music_NowTime = -1;
+float Music_TotalSample = -1;
+float Music_NowSample = -1;
 
 // 初期化
 void Room_Init()
@@ -109,6 +111,8 @@ void Room_Update()
 		StopSoundMem(music[NowMusicNum].sound);
 		Music_TotalTime = 0;
 		Music_NowTime = 0;
+		Music_TotalSample = 0;
+		Music_NowSample = 0;
 		ChangeImage_for = 1;
 		ChangeImage_flag = true;
 	}
@@ -117,6 +121,8 @@ void Room_Update()
 		StopSoundMem(music[NowMusicNum].sound);
 		Music_TotalTime = 0;
 		Music_NowTime = 0;
+		Music_TotalSample = 0;
+		Music_NowSample = 0;
 		ChangeImage_for = 2;
 		ChangeImage_flag = true;
 	}
@@ -291,7 +297,7 @@ void PlayMusic_Update(int flag)
 	{
 		int clicked_x, clicked_y;
 		GetMousePoint(&clicked_x, &clicked_y);
-		Music_NowTime = Music_TotalTime*(((float)clicked_x - (float)110) / (float)465);
+		Music_NowSample = Music_TotalSample*(((float)clicked_x - (float)110) / (float)465);
 	}
 
 	// コントロールボタン
@@ -302,6 +308,7 @@ void PlayMusic_Update(int flag)
 		{	// 最初から
 			PlaySoundMem(music[NowMusicNum].sound, DX_PLAYTYPE_LOOP, TRUE);
 			Music_NowTime = GetSoundCurrentTime(music[NowMusicNum].sound);
+			Music_NowSample = GetCurrentPositionSoundMem(music[NowMusicNum].sound);
 			break;
 		}
 		else
@@ -309,11 +316,13 @@ void PlayMusic_Update(int flag)
 			SetSoundCurrentTime(Music_NowTime, music[NowMusicNum].sound);
 			PlaySoundMem(music[NowMusicNum].sound, DX_PLAYTYPE_LOOP, FALSE);
 			Music_NowTime = GetSoundCurrentTime(music[NowMusicNum].sound);
+			Music_NowSample = GetCurrentPositionSoundMem(music[NowMusicNum].sound);
 			break;
 		}
 
 	case 2:	// 一時停止
 		Music_NowTime = GetSoundCurrentTime(music[NowMusicNum].sound);
+		Music_NowSample = GetCurrentPositionSoundMem(music[NowMusicNum].sound);
 		StopSoundMem(music[NowMusicNum].sound);
 		break;
 		
@@ -321,10 +330,13 @@ void PlayMusic_Update(int flag)
 		StopSoundMem(music[NowMusicNum].sound);
 		Music_TotalTime = -1;
 		Music_NowTime = -1;
+		Music_TotalSample = -1;
+		Music_NowSample = -1;
 		break;
 
 	case 4:	// 再生位置変更
-		SetSoundCurrentTime(Music_NowTime, music[NowMusicNum].sound);
+		SetCurrentPositionSoundMem(Music_NowSample, music[NowMusicNum].sound);
+		Music_NowTime = GetSoundCurrentTime(music[NowMusicNum].sound);
 		break;
 	}
 }
@@ -341,6 +353,8 @@ void PlayMusic_Draw(int flag)
 		{
 			Music_TotalTime = GetSoundTotalTime(music[NowMusicNum].sound);
 			Music_NowTime = GetSoundCurrentTime(music[NowMusicNum].sound);
+			Music_TotalSample = GetSoundTotalSample(music[NowMusicNum].sound);
+			Music_NowSample = GetCurrentPositionSoundMem(music[NowMusicNum].sound);
 		}
 		if (Music_NowTime != -1 && Music_TotalTime != -1)
 		{
