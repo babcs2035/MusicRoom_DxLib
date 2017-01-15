@@ -335,7 +335,9 @@ void PlayMusic_Update(int flag)
 		break;
 
 	case 4:	// 再生位置変更
+		StopSoundMem(music[NowMusicNum].sound);
 		SetCurrentPositionSoundMem(Music_NowSample, music[NowMusicNum].sound);
+		PlaySoundMem(music[NowMusicNum].sound, DX_PLAYTYPE_LOOP, FALSE);
 		Music_NowTime = GetSoundCurrentTime(music[NowMusicNum].sound);
 		break;
 	}
