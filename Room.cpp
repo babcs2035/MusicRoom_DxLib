@@ -33,8 +33,6 @@ int ChangeImage_for = 0;
 int FrameNum = 0;
 float Music_TotalTime = -1;
 float Music_NowTime = -1;
-float Music_TotalSample = -1;
-float Music_NowSample = -1;
 
 // 初期化
 void Room_Init()
@@ -111,7 +109,6 @@ void Room_Update()
 		StopSoundMem(music[NowMusicNum].sound);
 		Music_TotalTime = 0;
 		Music_NowTime = 0;
-		Music_TotalSample = 0;
 		Music_NowSample = 0;
 		ChangeImage_for = 1;
 		ChangeImage_flag = true;
@@ -121,7 +118,6 @@ void Room_Update()
 		StopSoundMem(music[NowMusicNum].sound);
 		Music_TotalTime = 0;
 		Music_NowTime = 0;
-		Music_TotalSample = 0;
 		Music_NowSample = 0;
 		ChangeImage_for = 2;
 		ChangeImage_flag = true;
@@ -292,14 +288,6 @@ void ChangeMusicImageGraph()
 // 1:再生	2:一時停止	3:停止	4:再生位置変更
 void PlayMusic_Update(int flag)
 {
-	// 再生バー
-	if (CheckSoundMem(music[NowMusicNum].sound) == true && flag == 4)
-	{
-		int clicked_x, clicked_y;
-		GetMousePoint(&clicked_x, &clicked_y);
-		Music_NowSample = Music_TotalSample*(((float)clicked_x - (float)110) / (float)465);
-	}
-
 	// コントロールボタン
 	switch (flag)
 	{
@@ -330,15 +318,25 @@ void PlayMusic_Update(int flag)
 		StopSoundMem(music[NowMusicNum].sound);
 		Music_TotalTime = -1;
 		Music_NowTime = -1;
-		Music_TotalSample = -1;
 		Music_NowSample = -1;
 		break;
 
-	case 4:	// 再生位置変更
+	case 4:{	// 再生位置変更
+		if (CheckSoundMem(music[NowMusicNum].sound) == false)
+		{
+			break;
+		}
+		// 再生バーのクリック位置から新しい再生位置を計算
+		int clicked_x, clicked_y;
+		GetMousePoint(&clicked_x, &clicked_y);
+		long long int Music_TotalSample = GetSoundTotalSample(music[NowMusicNum].sound);
+		long long int Music_NowSample = (Music_TotalSample*(clicked_x - 110)) / 465;
+		//再生位置変更
 		StopSoundMem(music[NowMusicNum].sound);
-		SetCurrentPositionSoundMem(Music_NowSample, music[NowMusicNum].sound);
-		PlaySoundMem(music[NowMusicNum].sound, DX_PLAYTYPE_LOOP, FALSE);
+		SetCurrentPositionSoundMem((int)Music_NowSample, music[NowMusicNum].sound);
 		Music_NowTime = GetSoundCurrentTime(music[NowMusicNum].sound);
+		PlaySoundMem(music[NowMusicNum].sound, DX_PLAYTYPE_LOOP, FALSE);
+	}
 		break;
 	}
 }
@@ -355,7 +353,6 @@ void PlayMusic_Draw(int flag)
 		{
 			Music_TotalTime = GetSoundTotalTime(music[NowMusicNum].sound);
 			Music_NowTime = GetSoundCurrentTime(music[NowMusicNum].sound);
-			Music_TotalSample = GetSoundTotalSample(music[NowMusicNum].sound);
 			Music_NowSample = GetCurrentPositionSoundMem(music[NowMusicNum].sound);
 		}
 		if (Music_NowTime != -1 && Music_TotalTime != -1)
