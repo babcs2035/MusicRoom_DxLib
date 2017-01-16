@@ -33,8 +33,8 @@ int ChangeImage_for = 0;
 int FrameNum = 0;
 float Music_TotalTime = -1;
 float Music_NowTime = -1;
-float Music_TotalSample = -1;
-float Music_NowSample = -1;
+long long int Music_TotalSample = -1;
+long long int Music_NowSample = -1;
 
 // 初期化
 void Room_Init()
@@ -111,7 +111,6 @@ void Room_Update()
 		StopSoundMem(music[NowMusicNum].sound);
 		Music_TotalTime = 0;
 		Music_NowTime = 0;
-		Music_TotalSample = 0;
 		Music_NowSample = 0;
 		ChangeImage_for = 1;
 		ChangeImage_flag = true;
@@ -121,7 +120,6 @@ void Room_Update()
 		StopSoundMem(music[NowMusicNum].sound);
 		Music_TotalTime = 0;
 		Music_NowTime = 0;
-		Music_TotalSample = 0;
 		Music_NowSample = 0;
 		ChangeImage_for = 2;
 		ChangeImage_flag = true;
@@ -230,7 +228,7 @@ void ChangeMusicImageGraph()
 			}
 			else if (i == 3)
 			{
-				DrawMI_R(music[(MusicNum - (3 - i) + NowMusicNum) % MusicNum].image, draw_x + DRAW_X_DISTANCE * 2 * ChangeImage_frame / DRAW_FRAME_COST, Y_DEFAULT_DIFF * abs(ChangeImage_frame - Y_DEFAULT_DIFF) / DRAW_FRAME_COST, (DRAW_WIDTH_L - DRAW_X_DISTANCE) * ChangeImage_frame / DRAW_FRAME_COST,TRUE);
+				DrawMI_R(music[(MusicNum - (3 - i) + NowMusicNum) % MusicNum].image, draw_x + DRAW_X_DISTANCE * 2 * ChangeImage_frame / DRAW_FRAME_COST, Y_DEFAULT_DIFF * abs(ChangeImage_frame - Y_DEFAULT_DIFF) / DRAW_FRAME_COST, (DRAW_WIDTH_L - DRAW_X_DISTANCE) * ChangeImage_frame / DRAW_FRAME_COST, TRUE);
 			}
 			else if (i > 3)
 			{
@@ -250,11 +248,11 @@ void ChangeMusicImageGraph()
 			}
 			else if (i == 3)
 			{
-				DrawMI_L(music[(MusicNum - (3 - i) + NowMusicNum) % MusicNum].image, draw_x + (DRAW_X_DISTANCE + DRAW_WIDTH_S) * -ChangeImage_frame / DRAW_FRAME_COST, Y_DEFAULT_DIFF * abs(ChangeImage_frame - Y_DEFAULT_DIFF) / DRAW_FRAME_COST, (DRAW_WIDTH_L - DRAW_X_DISTANCE) * -ChangeImage_frame / DRAW_FRAME_COST,TRUE);
+				DrawMI_L(music[(MusicNum - (3 - i) + NowMusicNum) % MusicNum].image, draw_x + (DRAW_X_DISTANCE + DRAW_WIDTH_S) * -ChangeImage_frame / DRAW_FRAME_COST, Y_DEFAULT_DIFF * abs(ChangeImage_frame - Y_DEFAULT_DIFF) / DRAW_FRAME_COST, (DRAW_WIDTH_L - DRAW_X_DISTANCE) * -ChangeImage_frame / DRAW_FRAME_COST, TRUE);
 			}
 			else if (i == 4)
 			{
-				DrawMI_R(music[(MusicNum - (3 - i) + NowMusicNum) % MusicNum].image, draw_x + (DRAW_X_DISTANCE + DRAW_WIDTH_S) * (abs(DRAW_X_START_POINT) -ChangeImage_frame) / DRAW_FRAME_COST, Y_DEFAULT_DIFF * ChangeImage_frame / DRAW_FRAME_COST, (DRAW_WIDTH_L - DRAW_X_DISTANCE) * -ChangeImage_frame / DRAW_FRAME_COST);
+				DrawMI_R(music[(MusicNum - (3 - i) + NowMusicNum) % MusicNum].image, draw_x + (DRAW_X_DISTANCE + DRAW_WIDTH_S) * (abs(DRAW_X_START_POINT) - ChangeImage_frame) / DRAW_FRAME_COST, Y_DEFAULT_DIFF * ChangeImage_frame / DRAW_FRAME_COST, (DRAW_WIDTH_L - DRAW_X_DISTANCE) * -ChangeImage_frame / DRAW_FRAME_COST);
 			}
 			else if (i > 4)
 			{
@@ -292,14 +290,6 @@ void ChangeMusicImageGraph()
 // 1:再生	2:一時停止	3:停止	4:再生位置変更
 void PlayMusic_Update(int flag)
 {
-	// 再生バー
-	if (CheckSoundMem(music[NowMusicNum].sound) == true && flag == 4)
-	{
-		int clicked_x, clicked_y;
-		GetMousePoint(&clicked_x, &clicked_y);
-		Music_NowSample = Music_TotalSample*(((float)clicked_x - (float)110) / (float)465);
-	}
-
 	// コントロールボタン
 	switch (flag)
 	{
@@ -325,20 +315,30 @@ void PlayMusic_Update(int flag)
 		Music_NowSample = GetCurrentPositionSoundMem(music[NowMusicNum].sound);
 		StopSoundMem(music[NowMusicNum].sound);
 		break;
-		
+
 	case 3:	// 停止
 		StopSoundMem(music[NowMusicNum].sound);
 		Music_TotalTime = -1;
 		Music_NowTime = -1;
-		Music_TotalSample = -1;
 		Music_NowSample = -1;
 		break;
 
 	case 4:	// 再生位置変更
-		StopSoundMem(music[NowMusicNum].sound);
-		SetCurrentPositionSoundMem(Music_NowSample, music[NowMusicNum].sound);
-		PlaySoundMem(music[NowMusicNum].sound, DX_PLAYTYPE_LOOP, FALSE);
-		Music_NowTime = GetSoundCurrentTime(music[NowMusicNum].sound);
+		if (CheckSoundMem(music[NowMusicNum].sound) == false) { break; }
+		// 再生バーのクリック位置から新しい再生位置を計算
+		{
+			int clicked_x, clicked_y;
+			GetMousePoint(&clicked_x, &clicked_y);
+			Music_TotalSample = GetSoundTotalSample(music[NowMusicNum].sound);
+			Music_NowSample = (Music_TotalSample*(clicked_x - 110)) / 465;
+		}
+		// 再生位置変更
+		{
+			StopSoundMem(music[NowMusicNum].sound);
+			SetCurrentPositionSoundMem((int)Music_NowSample, music[NowMusicNum].sound);
+			Music_NowTime = GetSoundCurrentTime(music[NowMusicNum].sound);
+			PlaySoundMem(music[NowMusicNum].sound, DX_PLAYTYPE_LOOP, FALSE);
+		}
 		break;
 	}
 }
@@ -355,7 +355,6 @@ void PlayMusic_Draw(int flag)
 		{
 			Music_TotalTime = GetSoundTotalTime(music[NowMusicNum].sound);
 			Music_NowTime = GetSoundCurrentTime(music[NowMusicNum].sound);
-			Music_TotalSample = GetSoundTotalSample(music[NowMusicNum].sound);
 			Music_NowSample = GetCurrentPositionSoundMem(music[NowMusicNum].sound);
 		}
 		if (Music_NowTime != -1 && Music_TotalTime != -1)
