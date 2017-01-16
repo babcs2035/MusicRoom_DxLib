@@ -5,6 +5,8 @@
 #define MAX_LOAD_MUSIC			50
 #define MUSIC_COMMENT_HEIGHT	15
 #define MUSIC_COMMENT_WEIGHT	25
+#define DIRECTORY_PASS_GRAPH	"data\\graph\\"
+#define DIRECTORY_PASS_MUSIC	"data\\music\\"
 
 // 関数プロトタイプ宣言
 void ChangeMusicImageGraph();
@@ -49,9 +51,9 @@ void Room_Init()
 	{
 		FileRead_gets(music[i].name, sizeof(music[i].name), FP_music_list);
 		music[i].name[strlen(music[i].name)] = '\0';
-		sprintfDx(Filename, "data\\graph\\%s.png", music[i].name);
+		sprintfDx(Filename, DIRECTORY_PASS_GRAPH "%s.png", music[i].name);
 		music[i].image = LoadGraph(Filename);
-		if (music[i].image == -1) { music[i].image = LoadGraph("data\\graph\\system\\no image.png", TRUE); }
+		if (music[i].image == -1) { music[i].image = LoadGraph(DIRECTORY_PASS_GRAPH "system\\no image.png", TRUE); }
 		sprintf(Filename, "data\\comment\\%s.txt", music[i].name);
 		int FP_comment = FileRead_open(Filename);
 		FileRead_gets(music[i].creator, sizeof(music[i].creator), FP_comment);
@@ -79,24 +81,24 @@ void Room_Init()
 			}
 		}
 		FileRead_close(FP_comment);
-		sprintf(Filename, "data\\music\\%s.mp3", music[i].name);
+		sprintf(Filename, DIRECTORY_PASS_MUSIC "%s.mp3", music[i].name);
 		music[i].sound = LoadSoundMem(Filename);
 		if (music[i].sound == -1)
 		{
-			sprintf(Filename, "data\\music\\%s.ogg", music[i].name);
+			sprintf(Filename, DIRECTORY_PASS_MUSIC "%s.ogg", music[i].name);
 			music[i].sound = LoadSoundMem(Filename);
 		}
 		if (music[i].sound == -1)
 		{
-			sprintf(Filename, "data\\music\\%s.wav", music[i].name);
+			sprintf(Filename, DIRECTORY_PASS_MUSIC "%s.wav", music[i].name);
 			music[i].sound = LoadSoundMem(Filename);
 		}
 	}
 	FileRead_close(FP_music_list);
-	G_main = LoadGraph("data\\graph\\system\\main.png");
-	G_frame = LoadGraph("data\\graph\\system\\frame.png");
-	LoadDivGraph("data\\graph\\system\\button.png", 9, 3, 3, 40, 40, G_button);
-	G_button[8] = LoadGraph("data\\graph\\system\\time.png");
+	G_main = LoadGraph(DIRECTORY_PASS_GRAPH "system\\main.png");
+	G_frame = LoadGraph(DIRECTORY_PASS_GRAPH "system\\frame.png");
+	LoadDivGraph(DIRECTORY_PASS_GRAPH "system\\button.png", 9, 3, 3, 40, 40, G_button);
+	G_button[8] = LoadGraph(DIRECTORY_PASS_GRAPH "system\\time.png");
 	FirstTime = GetNowCount();
 }
 
