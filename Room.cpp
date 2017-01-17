@@ -26,7 +26,6 @@ typedef struct Music_s {
 Music_data music[MAX_LOAD_MUSIC];
 int G_main, G_frame, G_button[9];
 int NowMusicNum = 0;
-int ChangeImage_frame = 0;
 int FirstTime, NowTime;
 char MusicNumStr[5];
 int MusicNum;
@@ -37,8 +36,11 @@ float Music_TotalTime = -1;
 float Music_NowTime = -1;
 long long int Music_TotalSample = -1;
 long long int Music_NowSample = -1;
+int g_frametime = 0;	// 1フレームにかかった時間
+int g_lasttime = 0;		// 
+int g_starttime = 0;	// 
 
-// 初期化
+						// 初期化
 void Room_Init()
 {
 	FrameNum = 0;
@@ -82,16 +84,16 @@ void Room_Init()
 		}
 		FileRead_close(FP_comment);
 		sprintf(Filename, DIRECTORY_PASS_MUSIC "%s.mp3", music[i].name);
-		music[i].sound = LoadSoundMem(Filename);
+		music[i].sound = LoadBGM(Filename);
 		if (music[i].sound == -1)
 		{
 			sprintf(Filename, DIRECTORY_PASS_MUSIC "%s.ogg", music[i].name);
-			music[i].sound = LoadSoundMem(Filename);
+			music[i].sound = LoadBGM(Filename);
 		}
 		if (music[i].sound == -1)
 		{
 			sprintf(Filename, DIRECTORY_PASS_MUSIC "%s.wav", music[i].name);
-			music[i].sound = LoadSoundMem(Filename);
+			music[i].sound = LoadBGM(Filename);
 		}
 	}
 	FileRead_close(FP_music_list);
@@ -106,6 +108,11 @@ void Room_Init()
 void Room_Update()
 {
 	FrameNum++;
+	g_lasttime = GetNowCount()&INT_MAX;
+	int curtime = GetNowCount()&INT_MAX;
+	g_frametime = (curtime - g_lasttime)&INT_MAX;
+	g_lasttime = curtime;
+
 	// 音楽選択
 	NowTime = GetNowCount() - FirstTime;
 	if (Keyboard_Get(KEY_INPUT_LEFT) != 0 && ChangeImage_flag == false)
@@ -116,6 +123,7 @@ void Room_Update()
 		Music_NowSample = 0;
 		ChangeImage_for = 1;
 		ChangeImage_flag = true;
+		g_starttime = g_lasttime;
 	}
 	else if (Keyboard_Get(KEY_INPUT_RIGHT) != 0 && ChangeImage_flag == false)
 	{
@@ -125,6 +133,7 @@ void Room_Update()
 		Music_NowSample = 0;
 		ChangeImage_for = 2;
 		ChangeImage_flag = true;
+		g_starttime = g_lasttime;
 	}
 
 	// 音楽調節
@@ -142,7 +151,7 @@ static const int DRAW_Y_TOP = 25;								// yの変形（上）
 static const int DRAW_BOTTOM = DRAW_Y_TOP + DRAW_HEIGHT;		// yの変形（下）
 static const int Y_DEFAULT_DIFF = 50;							// yの沈み込み度
 static const int DRAW_X_DISTANCE = 50;							// 画像と次の画像のx座標の間隔
-static const int DRAW_FRAME_COST = 50;							// 何フレームかけて画像の移動・変形を行うか
+static const int DRAW_TIME_COST = 500;							// 何ミリ秒かけて画像の移動・変形を行うか
 
 static void DrawMI_L(int gr_handle, int draw_x, int y2_diff = 0, int x2_diff = 0, bool flag = false)
 {
@@ -210,11 +219,9 @@ void Room_Draw()
 }
 
 // 音楽イメージ画像の変化描画
-bool flag = true;
 void ChangeMusicImageGraph()
 {
-	if (flag == true) { ChangeImage_frame++; flag = false; }
-	else if (FrameNum % 7 == 0) { flag = true; }
+	int per = (g_lasttime - g_starttime) * 100 / DRAW_TIME_COST;
 	if (ChangeImage_for == 1)
 	{
 		int draw_x = DRAW_X_START_POINT + 6 * (DRAW_X_DISTANCE + DRAW_WIDTH_S);
@@ -222,19 +229,19 @@ void ChangeMusicImageGraph()
 		{
 			if (i < 2)
 			{
-				DrawMI_L(music[(MusicNum - (3 - i) + NowMusicNum) % MusicNum].image, draw_x + ChangeImage_frame * 2);
+				DrawMI_L(music[(MusicNum - (3 - i) + NowMusicNum) % MusicNum].image, draw_x + (DRAW_WIDTH_S + DRAW_X_DISTANCE)*per / 100);
 			}
 			else if (i == 2)
 			{
-				DrawMI_L(music[(MusicNum - (3 - i) + NowMusicNum) % MusicNum].image, draw_x + DRAW_X_DISTANCE * 2 * ChangeImage_frame / DRAW_FRAME_COST, Y_DEFAULT_DIFF * ChangeImage_frame / DRAW_FRAME_COST, (DRAW_WIDTH_L - DRAW_X_DISTANCE) * ChangeImage_frame / DRAW_FRAME_COST);
+				DrawMI_L(music[(MusicNum - (3 - i) + NowMusicNum) % MusicNum].image, draw_x + (DRAW_WIDTH_S + DRAW_X_DISTANCE)*per / 100, Y_DEFAULT_DIFF * per / 100, (DRAW_WIDTH_L - DRAW_X_DISTANCE)*per / 100);
 			}
 			else if (i == 3)
 			{
-				DrawMI_R(music[(MusicNum - (3 - i) + NowMusicNum) % MusicNum].image, draw_x + DRAW_X_DISTANCE * 2 * ChangeImage_frame / DRAW_FRAME_COST, Y_DEFAULT_DIFF * abs(ChangeImage_frame - Y_DEFAULT_DIFF) / DRAW_FRAME_COST, (DRAW_WIDTH_L - DRAW_X_DISTANCE) * ChangeImage_frame / DRAW_FRAME_COST, TRUE);
+				DrawMI_R(music[(MusicNum - (3 - i) + NowMusicNum) % MusicNum].image, draw_x + (DRAW_WIDTH_S + DRAW_X_DISTANCE)*per / 100, Y_DEFAULT_DIFF * abs(per - 100) / 100, (DRAW_WIDTH_L - DRAW_X_DISTANCE)*per / 100, TRUE);
 			}
 			else if (i > 3)
 			{
-				DrawMI_R(music[(MusicNum - (3 - i) + NowMusicNum) % MusicNum].image, draw_x + 150 + ChangeImage_frame * 2);
+				DrawMI_R(music[(MusicNum - (3 - i) + NowMusicNum) % MusicNum].image, draw_x + 150 + (DRAW_WIDTH_S + DRAW_X_DISTANCE)*per / 100);
 			}
 			draw_x -= DRAW_X_DISTANCE + DRAW_WIDTH_S;
 		}
@@ -246,26 +253,26 @@ void ChangeMusicImageGraph()
 		{
 			if (i < 3)
 			{
-				DrawMI_L(music[(MusicNum - (3 - i) + NowMusicNum) % MusicNum].image, draw_x + -ChangeImage_frame * 2);
+				DrawMI_L(music[(MusicNum - (3 - i) + NowMusicNum) % MusicNum].image, draw_x - (DRAW_WIDTH_S + DRAW_X_DISTANCE)*per / 100);
 			}
 			else if (i == 3)
 			{
-				DrawMI_L(music[(MusicNum - (3 - i) + NowMusicNum) % MusicNum].image, draw_x + (DRAW_X_DISTANCE + DRAW_WIDTH_S) * -ChangeImage_frame / DRAW_FRAME_COST, Y_DEFAULT_DIFF * abs(ChangeImage_frame - Y_DEFAULT_DIFF) / DRAW_FRAME_COST, (DRAW_WIDTH_L - DRAW_X_DISTANCE) * -ChangeImage_frame / DRAW_FRAME_COST, TRUE);
+				DrawMI_L(music[(MusicNum - (3 - i) + NowMusicNum) % MusicNum].image, draw_x - (DRAW_WIDTH_S + DRAW_X_DISTANCE)*per / 100, Y_DEFAULT_DIFF * abs(per - 100) / 100, -(DRAW_WIDTH_L - DRAW_X_DISTANCE)*per / 100, TRUE);
 			}
 			else if (i == 4)
 			{
-				DrawMI_R(music[(MusicNum - (3 - i) + NowMusicNum) % MusicNum].image, draw_x + (DRAW_X_DISTANCE + DRAW_WIDTH_S) * (abs(DRAW_X_START_POINT) - ChangeImage_frame) / DRAW_FRAME_COST, Y_DEFAULT_DIFF * ChangeImage_frame / DRAW_FRAME_COST, (DRAW_WIDTH_L - DRAW_X_DISTANCE) * -ChangeImage_frame / DRAW_FRAME_COST);
+				DrawMI_R(music[(MusicNum - (3 - i) + NowMusicNum) % MusicNum].image, draw_x - (DRAW_WIDTH_S + DRAW_X_DISTANCE)*per / 100, Y_DEFAULT_DIFF * per / 100, -(DRAW_WIDTH_L - DRAW_X_DISTANCE)*per / 100);
 			}
 			else if (i > 4)
 			{
-				DrawMI_R(music[(MusicNum - (3 - i) + NowMusicNum) % MusicNum].image, draw_x + 150 + -ChangeImage_frame * 2);
+				DrawMI_R(music[(MusicNum - (3 - i) + NowMusicNum) % MusicNum].image, draw_x + 150 - (DRAW_WIDTH_S + DRAW_X_DISTANCE)*per / 100);
 			}
 			draw_x -= DRAW_X_DISTANCE + DRAW_WIDTH_S;
 		}
 	}
-	if (ChangeImage_frame >= DRAW_FRAME_COST)
+	if (g_lasttime - g_starttime >= DRAW_TIME_COST)
 	{
-		ChangeImage_flag = false; ChangeImage_frame = 0;
+		ChangeImage_flag = false; g_starttime = 0;
 		if (ChangeImage_for == 1)
 		{
 			NowMusicNum--;
