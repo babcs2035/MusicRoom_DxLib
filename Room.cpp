@@ -51,6 +51,9 @@ void Room_Init()
 	MusicNum = atoi(MusicNumStr);
 	for (int i = 0; i < MusicNum; ++i)
 	{
+#ifdef _DEBUG
+		int start_time = DxLib::GetNowCount();
+#endif
 		FileRead_gets(music[i].name, sizeof(music[i].name), FP_music_list);
 		music[i].name[strlen(music[i].name)] = '\0';
 		sprintfDx(Filename, DIRECTORY_PASS_GRAPH "%s.png", music[i].name);
@@ -95,6 +98,10 @@ void Room_Init()
 			sprintf(Filename, DIRECTORY_PASS_MUSIC "%s.wav", music[i].name);
 			music[i].sound = LoadBGM(Filename);
 		}
+
+#ifdef _DEBUG
+		printfDx("%d\n",DxLib::GetNowCount()-start_time);
+#endif
 	}
 	FileRead_close(FP_music_list);
 	G_main = LoadGraph(DIRECTORY_PASS_GRAPH "system\\main.png");
@@ -257,15 +264,15 @@ void ChangeMusicImageGraph()
 			}
 			else if (i == 3)
 			{
-				DrawMI_L(music[(MusicNum - (3 - i) + NowMusicNum) % MusicNum].image, draw_x - (DRAW_WIDTH_S + DRAW_X_DISTANCE)*per / 100, Y_DEFAULT_DIFF * abs(per - 100) / 100, -(DRAW_WIDTH_L - DRAW_X_DISTANCE)*per / 100, TRUE);
+				DrawMI_L(music[(MusicNum - (3 - i) + NowMusicNum) % MusicNum].image, draw_x - (DRAW_WIDTH_S + DRAW_X_DISTANCE)*per / 100, Y_DEFAULT_DIFF * abs(per - 100) / 100, -(DRAW_WIDTH_L - DRAW_WIDTH_S)*per / 100, TRUE);
 			}
 			else if (i == 4)
 			{
-				DrawMI_R(music[(MusicNum - (3 - i) + NowMusicNum) % MusicNum].image, draw_x - (DRAW_WIDTH_S + DRAW_X_DISTANCE)*per / 100, Y_DEFAULT_DIFF * per / 100, -(DRAW_WIDTH_L - DRAW_X_DISTANCE)*per / 100);
+				DrawMI_R(music[(MusicNum - (3 - i) + NowMusicNum) % MusicNum].image, draw_x + (DRAW_WIDTH_L - DRAW_WIDTH_S) - (DRAW_WIDTH_S + DRAW_X_DISTANCE) *per / 100, Y_DEFAULT_DIFF * per / 100, -(DRAW_WIDTH_L - DRAW_WIDTH_S)*per / 100);
 			}
 			else if (i > 4)
 			{
-				DrawMI_R(music[(MusicNum - (3 - i) + NowMusicNum) % MusicNum].image, draw_x + 150 - (DRAW_WIDTH_S + DRAW_X_DISTANCE)*per / 100);
+				DrawMI_R(music[(MusicNum - (3 - i) + NowMusicNum) % MusicNum].image, draw_x + (DRAW_WIDTH_L - DRAW_WIDTH_S) - (DRAW_WIDTH_S + DRAW_X_DISTANCE)*per / 100);
 			}
 			draw_x -= DRAW_X_DISTANCE + DRAW_WIDTH_S;
 		}
