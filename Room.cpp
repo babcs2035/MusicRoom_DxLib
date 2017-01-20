@@ -36,8 +36,8 @@ int MusicNum;
 bool ChangeImage_flag = false;
 int ChangeImage_for = 0;
 int FrameNum = 0;
-float Music_TotalTime = -1;
-float Music_NowTime = -1;
+int Music_TotalTime = -1;
+int Music_NowTime = -1;
 long long int Music_TotalSample = -1;
 long long int Music_NowSample = -1;
 int g_frametime = 0;	// 1フレームにかかった時間
@@ -53,7 +53,6 @@ void Room_Init()
 	FileRead_gets(MusicNumStr, sizeof(MusicNumStr), FP_music_list);
 	MusicNum = atoi(MusicNumStr);
 	G_nowloading = LoadGraph(DIRECTORY_PASS_GRAPH "system\\nowloading.png", TRUE);
-	SetUseASyncLoadFlag(TRUE);
 	G_noimage = LoadGraph(DIRECTORY_PASS_GRAPH "system\\noimage.png", TRUE);
 	for (int i = 0; i < MusicNum; ++i)
 	{
@@ -64,57 +63,31 @@ void Room_Init()
 		sprintfDx(Filename, DIRECTORY_PASS_GRAPH "%s.png", music[i].name);
 		music[i].image = LoadGraph(Filename);
 		if (music[i].image == -1) { music[i].image = G_noimage; }
-		sprintf(Filename, "data\\comment\\%s.txt", music[i].name);
+		SetUseASyncLoadFlag(TRUE);
+		sprintfDx(Filename, "data\\comment\\%s.txt", music[i].name);
 		int FP_comment = FileRead_open(Filename, FALSE);
 		FileRead_gets(music[i].creator, sizeof(music[i].creator), FP_comment);
 		auto strlength = FileRead_read(music[i].comment, sizeof(music[i].comment) - 1, FP_comment);
 		if (0 <= strlength) { music[i].comment[strlength] = '\0'; }
-#if 0
-		bool flag = false;//trueのときに、music[i].comment[j][1]が読み込んだ文字列を入れる先頭
-		for (int j = 0; FileRead_eof(FP_comment) == FALSE && j < sizeof(music[i].comment[j]); ++j)
-		{
-			static_assert(sizeof(music[i].comment[j]) == 25, "");
-			music[i].comment[j][23] = '\0';
-			if (flag == false)
-			{
-				FileRead_gets(music[i].comment[j], sizeof(music[i].comment[j]), FP_comment);
-			}
-			if (flag == true)
-			{
-				FileRead_gets(&music[i].comment[j][1], sizeof(music[i].comment[j]) - 1, FP_comment);
-			}
-			char temp[3] = { music[i].comment[j][23], '\0', '\0' };
-			if (MultiByteCharCheck(temp, DX_CHARSET_SHFTJIS) == TRUE)
-			{
-				if (j < MUSIC_COMMENT_HEIGHT - 1)
-				{
-					music[i].comment[j + 1][0] = music[i].comment[j][23];
-					music[i].comment[j][23] = '\0';
-					flag = true;
-				}
-			}
-		}
-#endif
-
 		FileRead_close(FP_comment);
 		const char*const extensions[] = { ".wav",".ogg",".mp3" };
 		music[i].sound = -1;
 		for (int j = 0; j < sizeof(extensions)/sizeof(extensions[0]); ++j)
 		{
-			sprintf(Filename, DIRECTORY_PASS_MUSIC "%s%s", music[i].name, extensions[j]);
-			if ((PathFileExists(Filename)) == true)
+			sprintfDx(Filename, DIRECTORY_PASS_MUSIC "%s%s", music[i].name, extensions[j]);
+			if (PathFileExists(Filename) == TRUE)
 			{
 				music[i].sound = LoadBGM(Filename);
 				break;
 			}
 		}
+		SetUseASyncLoadFlag(FALSE);
 
 #ifdef _DEBUG
 		printfDx("%d\n", DxLib::GetNowCount() - start_time);
 #endif
 	}
 	FileRead_close(FP_music_list);
-	SetUseASyncLoadFlag(FALSE);
 	G_main = LoadGraph(DIRECTORY_PASS_GRAPH "system\\main.png");
 	G_frame = LoadGraph(DIRECTORY_PASS_GRAPH "system\\frame.png");
 	LoadDivGraph(DIRECTORY_PASS_GRAPH "system\\button.png", 9, 3, 3, 40, 40, G_button);
@@ -125,6 +98,8 @@ void Room_Init()
 // 更新
 void Room_Update()
 {
+	clsDx();
+	printfDx("%d\n", GetASyncLoadNum());
 	FrameNum++;
 	g_lasttime = GetNowCount()&INT_MAX;
 	int curtime = GetNowCount()&INT_MAX;
@@ -218,8 +193,9 @@ void Room_Draw()
 		int draw_x = DRAW_X_START_POINT;
 		for (int i = 0; i < 7; ++i)
 		{
-			int image_handle = music[(MusicNum - (3 - i) + NowMusicNum) % MusicNum].image;
-			if ((CheckHandleASyncLoad(image_handle)) == TRUE)
+			auto& music_data = music[(MusicNum - (3 - i) + NowMusicNum) % MusicNum];
+			int image_handle = music_data.image;
+			if ((CheckHandleASyncLoad(music_data.sound)) == TRUE)
 			{
 				image_handle = G_nowloading;
 			}
@@ -259,8 +235,9 @@ void ChangeMusicImageGraph()
 		int draw_x = DRAW_X_START_POINT + 6 * (DRAW_X_DISTANCE + DRAW_WIDTH_S);
 		for (int i = 6; i >= 0; --i)
 		{
-			int image_handle = music[(MusicNum - (3 - i) + NowMusicNum) % MusicNum].image;
-			if ((CheckHandleASyncLoad(image_handle)) == TRUE)
+			auto& music_data = music[(MusicNum - (3 - i) + NowMusicNum) % MusicNum];
+			int image_handle = music_data.image;
+			if ((CheckHandleASyncLoad(music_data.sound)) == TRUE)
 			{
 				image_handle = G_nowloading;
 			}
@@ -288,8 +265,9 @@ void ChangeMusicImageGraph()
 		int draw_x = DRAW_X_START_POINT + 6 * (DRAW_X_DISTANCE + DRAW_WIDTH_S);
 		for (int i = 6; i >= 0; --i)
 		{
-			int image_handle = music[(MusicNum - (3 - i) + NowMusicNum) % MusicNum].image;
-			if ((CheckHandleASyncLoad(image_handle)) == TRUE)
+			auto& music_data = music[(MusicNum - (3 - i) + NowMusicNum) % MusicNum];
+			int image_handle = music_data.image;
+			if ((CheckHandleASyncLoad(music_data.sound)) == TRUE)
 			{
 				image_handle = G_nowloading;
 			}
@@ -430,6 +408,7 @@ void PlayMusic_Draw(int flag)
 		if (flag == 3) { DrawGraph(585, 268, G_button[4], TRUE); }
 		if (flag == 4)
 		{
+			ばぐ（Music_TotalTimeによる0除算）;
 			int minute = Music_NowTime / 1000 / 60;
 			int second = Music_NowTime / 1000 - minute * 60;
 			DrawGraph(75 + 459 * (Music_NowTime / Music_TotalTime), 238, G_button[8], TRUE);
