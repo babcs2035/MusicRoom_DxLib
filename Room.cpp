@@ -14,8 +14,8 @@
 
 // 関数プロトタイプ宣言
 void ChangeMusicImageGraph();
-void PlayMusic_Update(int flag);
-void PlayMusic_Draw(int flag);
+void PlayMusic_Update();
+void PlayMusic_Draw();
 
 // 構造体
 typedef struct Music_s {
@@ -72,7 +72,7 @@ void Room_Init()
 		FileRead_close(FP_comment);
 		const char*const extensions[] = { ".wav",".ogg",".mp3" };
 		music[i].sound = -1;
-		for (int j = 0; j < sizeof(extensions)/sizeof(extensions[0]); ++j)
+		for (int j = 0; j < sizeof(extensions) / sizeof(extensions[0]); ++j)
 		{
 			sprintfDx(Filename, DIRECTORY_PASS_MUSIC "%s%s", music[i].name, extensions[j]);
 			if (PathFileExists(Filename) == TRUE)
@@ -120,7 +120,7 @@ void Room_Update()
 	if (Keyboard_Get(KEY_INPUT_LEFT) != 0 && ChangeImage_flag == false)
 	{
 		StopSoundMem(music[NowMusicNum].sound);
-		Music_TotalTime = 0;
+		Music_TotalTime = 1;
 		Music_NowTime = 0;
 		Music_NowSample = 0;
 		ChangeImage_for = 1;
@@ -130,7 +130,7 @@ void Room_Update()
 	else if (Keyboard_Get(KEY_INPUT_RIGHT) != 0 && ChangeImage_flag == false)
 	{
 		StopSoundMem(music[NowMusicNum].sound);
-		Music_TotalTime = 0;
+		Music_TotalTime = 1;
 		Music_NowTime = 0;
 		Music_NowSample = 0;
 		ChangeImage_for = 2;
@@ -139,10 +139,7 @@ void Room_Update()
 	}
 
 	// 音楽調節
-	if (CheckMouseClick(15, 268, 55, 308) == true) { PlayMusic_Update(1); }
-	else if (CheckMouseClick(60, 268, 100, 308) == true) { PlayMusic_Update(2); }
-	else if (CheckMouseClick(585, 268, 625, 308) == true) { PlayMusic_Update(3); }
-	else if (CheckMouseClick(110, 278, 575, 300) == true) { PlayMusic_Update(4); }
+	PlayMusic_Update();
 }
 
 static const int DRAW_X_START_POINT = -75;						// 画面外から登場させる
@@ -217,12 +214,15 @@ void Room_Draw()
 		}
 	}
 	DrawGraph(0, 0, G_frame, TRUE);
-	if (CheckMouseIn(15, 268, 55, 308) == true) { PlayMusic_Draw(1); }
-	else if (CheckMouseIn(60, 268, 100, 308) == true) { PlayMusic_Draw(2); }
-	else if (CheckMouseIn(585, 268, 625, 308) == true) { PlayMusic_Draw(3); }
-	else if (CheckMouseIn(95 + 459 * (Music_NowTime / Music_TotalTime), 268, 95 + 459 * (Music_NowTime / Music_TotalTime) + 40, 308) == true) { PlayMusic_Draw(4); }
-	else if (CheckMouseIn(110, 278, 575, 300) == true) { PlayMusic_Draw(5); }
-	else { PlayMusic_Draw(0); }
+	if (CheckHandleASyncLoad(music[NowMusicNum].sound) == FALSE)
+	{
+		PlayMusic_Draw();
+	}
+	else
+	{
+		DrawBox(15, 268, 625, 308, GetColor(32, 32, 32), TRUE);
+		DrawString(27, 280, "Now Loadling... Please WAIT!", GetColor(255, 255, 255));
+	}
 	DrawFormatString(300, 300, GetColor(255, 255, 255), "%s", music[NowMusicNum].name);
 }
 
@@ -316,19 +316,29 @@ void ChangeMusicImageGraph()
 }
 
 // 音楽再生（更新）
-// 1:再生	2:一時停止	3:停止	4:再生位置変更
-void PlayMusic_Update(int flag)
+void PlayMusic_Update()
 {
-	// コントロールボタン
-	switch (flag)
+	if (CheckHandleASyncLoad(music[NowMusicNum].sound) == FALSE)
 	{
-	case 1:	// 再生
+		Music_TotalTime = GetSoundTotalTime(music[NowMusicNum].sound);
+		if (ChangeImage_flag == false)
+		{
+			if (CheckSoundMem(music[NowMusicNum].sound) == 1)
+			{
+				Music_NowTime = GetSoundCurrentTime(music[NowMusicNum].sound);
+				Music_NowSample = GetCurrentPositionSoundMem(music[NowMusicNum].sound);
+			}
+		}
+	}
+
+	// コントロールボタン
+	if (CheckMouseClick(15, 268, 55, 308) == true)
+	{
 		if (Music_NowTime == -1)
 		{	// 最初から
 			PlaySoundMem(music[NowMusicNum].sound, DX_PLAYTYPE_LOOP, TRUE);
 			Music_NowTime = GetSoundCurrentTime(music[NowMusicNum].sound);
 			Music_NowSample = GetCurrentPositionSoundMem(music[NowMusicNum].sound);
-			break;
 		}
 		else
 		{	// 途中から
@@ -336,94 +346,100 @@ void PlayMusic_Update(int flag)
 			PlaySoundMem(music[NowMusicNum].sound, DX_PLAYTYPE_LOOP, FALSE);
 			Music_NowTime = GetSoundCurrentTime(music[NowMusicNum].sound);
 			Music_NowSample = GetCurrentPositionSoundMem(music[NowMusicNum].sound);
-			break;
 		}
-
-	case 2:	// 一時停止
+	}
+	else if (CheckMouseClick(60, 268, 100, 308) == true)
+	{
+		// 一時停止
 		Music_NowTime = GetSoundCurrentTime(music[NowMusicNum].sound);
 		Music_NowSample = GetCurrentPositionSoundMem(music[NowMusicNum].sound);
 		StopSoundMem(music[NowMusicNum].sound);
-		break;
-
-	case 3:	// 停止
+	}
+	else if (CheckMouseClick(585, 268, 625, 308) == true)
+	{
+		// 停止
 		StopSoundMem(music[NowMusicNum].sound);
 		Music_TotalTime = -1;
 		Music_NowTime = -1;
 		Music_NowSample = -1;
-		break;
-
-	case 4:	// 再生位置変更
-		if (CheckSoundMem(music[NowMusicNum].sound) == false) { break; }
-		// 再生バーのクリック位置から新しい再生位置を計算
+	}
+	else if (CheckMouseClick(110, 278, 575, 300) == true)
+	{	// 再生位置変更
+		if (CheckSoundMem(music[NowMusicNum].sound) == 1)
 		{
-			int clicked_x, clicked_y;
-			GetMousePoint(&clicked_x, &clicked_y);
-			Music_TotalSample = GetSoundTotalSample(music[NowMusicNum].sound);
-			Music_NowSample = (Music_TotalSample*(clicked_x - 110)) / 465;
+			{	// 再生バーのクリック位置から新しい再生位置を計算
+				int clicked_x, clicked_y;
+				GetMousePoint(&clicked_x, &clicked_y);
+				Music_TotalSample = GetSoundTotalSample(music[NowMusicNum].sound);
+				Music_NowSample = (Music_TotalSample*(clicked_x - 110)) / 465;
+			}
+			{	// 再生位置変更
+				StopSoundMem(music[NowMusicNum].sound);
+				SetCurrentPositionSoundMem((int)Music_NowSample, music[NowMusicNum].sound);
+				Music_NowTime = GetSoundCurrentTime(music[NowMusicNum].sound);
+				PlaySoundMem(music[NowMusicNum].sound, DX_PLAYTYPE_LOOP, FALSE);
+			}
 		}
-		// 再生位置変更
-		{
-			StopSoundMem(music[NowMusicNum].sound);
-			SetCurrentPositionSoundMem((int)Music_NowSample, music[NowMusicNum].sound);
-			Music_NowTime = GetSoundCurrentTime(music[NowMusicNum].sound);
-			PlaySoundMem(music[NowMusicNum].sound, DX_PLAYTYPE_LOOP, FALSE);
-		}
-		break;
 	}
 }
 
 // 音楽再生（描画）
-// 0:どこもinしていない	1:再生にin	2:一時停止にin	3:停止にin	4:再生場所ボタン追加	5:長さ表示
-void PlayMusic_Draw(int flag)
+void PlayMusic_Draw()
 {
-	if (CheckHandleASyncLoad(music[NowMusicNum].sound) == FALSE)
+	// 再生バー
+	DrawRoundRect(110, 278, 575, 300, 3, 3, GetColor(32, 32, 32), TRUE);
+	if (ChangeImage_flag == false)
 	{
-		// 再生バー
-		DrawRoundRect(110, 278, 575, 300, 3, 3, GetColor(32, 32, 32), TRUE);
-		if (ChangeImage_flag == false)
+		if (Music_NowTime != -1 && Music_TotalTime != -1)
 		{
-			if (CheckSoundMem(music[NowMusicNum].sound) == 1)
-			{
-				Music_TotalTime = GetSoundTotalTime(music[NowMusicNum].sound);
-				Music_NowTime = GetSoundCurrentTime(music[NowMusicNum].sound);
-				Music_NowSample = GetCurrentPositionSoundMem(music[NowMusicNum].sound);
-			}
-			if (Music_NowTime != -1 && Music_TotalTime != -1)
-			{
-				DrawRoundRect(112, 281, 112 + 459 * (Music_NowTime / Music_TotalTime), 297, 3, 3, GetColor(32, 110, 32), TRUE);
-				DrawGraph(95 + 459 * (Music_NowTime / Music_TotalTime), 268, G_button[6], TRUE);
-			}
-			else
-			{
-				DrawGraph(95, 268, G_button[7], TRUE);
-			}
+			DrawRoundRect(112, 281, 112 + 459 * Music_NowTime / Music_TotalTime, 297, 3, 3, GetColor(32, 110, 32), TRUE);
+			DrawGraph(95 + 459 * Music_NowTime / Music_TotalTime, 268, G_button[6], TRUE);
 		}
+		else
+		{
+			DrawGraph(95, 268, G_button[7], TRUE);
+		}
+	}
 
-		// コントロールボタン
-		if (flag != 1) { DrawGraph(15, 268, G_button[0], TRUE); }
-		if (flag != 2) { DrawGraph(60, 268, G_button[2], TRUE); }
-		if (flag != 3) { DrawGraph(585, 268, G_button[1], TRUE); }
-		if (flag == 1) { DrawGraph(15, 268, G_button[3], TRUE); }
-		if (flag == 2) { DrawGraph(60, 268, G_button[5], TRUE); }
-		if (flag == 3) { DrawGraph(585, 268, G_button[4], TRUE); }
-		if (flag == 4)
-		{
-			ばぐ（Music_TotalTimeによる0除算）;
-			int minute = Music_NowTime / 1000 / 60;
-			int second = Music_NowTime / 1000 - minute * 60;
-			DrawGraph(75 + 459 * (Music_NowTime / Music_TotalTime), 238, G_button[8], TRUE);
-			DrawFormatString(93 + 459 * (Music_NowTime / Music_TotalTime), 246, GetColor(0, 0, 0), "%02d:%02d", minute, second);
-		}
-		if (flag == 4 || flag == 5)
-		{
-			int minute = Music_TotalTime / 1000 / 60;
-			int second = Music_TotalTime / 1000 - minute * 60;
-			DrawFormatString(525, 282, GetColor(255, 255, 255), "%02d:%02d", minute, second);
-		}
+	// コントロールボタン
+	if (CheckMouseIn(15, 268, 55, 308) == true)
+	{
+		DrawGraph(15, 268, G_button[3], TRUE);
 	}
 	else
 	{
-		DrawBox(15, 268, 625, 308, GetColor(32, 32, 32), TRUE);
-		DrawString(27, 280, "Now Loadling... Please WAIT!", GetColor(255, 255, 255));
+		DrawGraph(15, 268, G_button[0], TRUE);
+	}
+	if (CheckMouseIn(60, 268, 100, 308) == true)
+	{
+		DrawGraph(60, 268, G_button[5], TRUE);
+	}
+	else
+	{
+		DrawGraph(60, 268, G_button[2], TRUE);
+	}
+	if (CheckMouseIn(585, 268, 625, 308) == true)
+	{
+		DrawGraph(585, 268, G_button[4], TRUE);
+	}
+	else
+	{
+		DrawGraph(585, 268, G_button[1], TRUE);
+	}
+	if (CheckMouseIn(95 + 459 * Music_NowTime / Music_TotalTime, 268, 95 + 459 * Music_NowTime / Music_TotalTime + 40, 308) == true)
+	{
+		if (CheckSoundMem(music[NowMusicNum].sound) == 1)
+		{
+			int minute = Music_NowTime / 1000 / 60;
+			int second = Music_NowTime / 1000 - minute * 60;
+			DrawGraph(75 + 459 * Music_NowTime / Music_TotalTime, 238, G_button[8], TRUE);
+			DrawFormatString(93 + 459 * Music_NowTime / Music_TotalTime, 246, GetColor(0, 0, 0), "%02d:%02d", minute, second);
+		}
+	}
+	else if (CheckMouseIn(110, 278, 575, 300) == true)
+	{
+		int minute = Music_TotalTime / 1000 / 60;
+		int second = Music_TotalTime / 1000 - minute * 60;
+		DrawFormatString(525, 282, GetColor(255, 255, 255), "%02d:%02d", minute, second);
 	}
 }
