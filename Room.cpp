@@ -3,19 +3,12 @@
 #include "Keyboard.h"
 #include <string.h>
 #include "Mouse.h"
-
 #pragma comment(lib, "shlwapi.lib")
-
 #define MAX_LOAD_MUSIC			50
 #define MUSIC_COMMENT_HEIGHT	15
 #define MUSIC_COMMENT_WEIGHT	25
 #define DIRECTORY_PASS_GRAPH	"data\\graph\\"
 #define DIRECTORY_PASS_MUSIC	"data\\music\\"
-
-// 関数プロトタイプ宣言
-void ChangeMusicImageGraph();
-void PlayMusic_Update();
-void PlayMusic_Draw();
 
 // 構造体
 typedef struct Music_s {
@@ -35,19 +28,17 @@ char MusicNumStr[5];
 int MusicNum;
 bool ChangeImage_flag = false;
 int ChangeImage_for = 0;
-int FrameNum = 0;
 int Music_TotalTime = -1;
 int Music_NowTime = -1;
 long long int Music_TotalSample = -1;
 long long int Music_NowSample = -1;
-int g_frametime = 0;	// 1フレームにかかった時間
-int g_lasttime = 0;		// 
-int g_starttime = 0;	// 
+int g_frametime = 0;
+int g_lasttime = 0;
+int g_starttime = 0;
 
 // 初期化
 void Room_Init()
 {
-	FrameNum = 0;
 	TCHAR Filename[10005];
 	int FP_music_list = FileRead_open("data\\music_list.txt");
 	FileRead_gets(MusicNumStr, sizeof(MusicNumStr), FP_music_list);
@@ -56,9 +47,6 @@ void Room_Init()
 	G_noimage = LoadGraph(DIRECTORY_PASS_GRAPH "system\\noimage.png", TRUE);
 	for (int i = 0; i < MusicNum; ++i)
 	{
-#ifdef _DEBUG
-		int start_time = DxLib::GetNowCount();
-#endif
 		FileRead_gets(music[i].name, sizeof(music[i].name), FP_music_list);
 		sprintfDx(Filename, DIRECTORY_PASS_GRAPH "%s.png", music[i].name);
 		music[i].image = LoadGraph(Filename);
@@ -82,10 +70,6 @@ void Room_Init()
 			}
 		}
 		SetUseASyncLoadFlag(FALSE);
-
-#ifdef _DEBUG
-		printfDx("%d\n", DxLib::GetNowCount() - start_time);
-#endif
 	}
 	FileRead_close(FP_music_list);
 	G_main = LoadGraph(DIRECTORY_PASS_GRAPH "system\\main.png");
@@ -98,9 +82,6 @@ void Room_Init()
 // 更新
 void Room_Update()
 {
-	clsDx();
-	printfDx("%d\n", GetASyncLoadNum());
-	FrameNum++;
 	g_lasttime = GetNowCount()&INT_MAX;
 	int curtime = GetNowCount()&INT_MAX;
 	g_frametime = (curtime - g_lasttime)&INT_MAX;
@@ -138,7 +119,7 @@ void Room_Update()
 		g_starttime = g_lasttime;
 	}
 
-	// 音楽調節
+	// 音楽再生
 	PlayMusic_Update();
 }
 
@@ -214,6 +195,8 @@ void Room_Draw()
 		}
 	}
 	DrawGraph(0, 0, G_frame, TRUE);
+
+	// 音楽再生
 	if (CheckHandleASyncLoad(music[NowMusicNum].sound) == FALSE)
 	{
 		PlayMusic_Draw();
@@ -223,7 +206,6 @@ void Room_Draw()
 		DrawBox(15, 268, 625, 308, GetColor(32, 32, 32), TRUE);
 		DrawString(27, 280, "Now Loadling... Please WAIT!", GetColor(255, 255, 255));
 	}
-	DrawFormatString(300, 300, GetColor(255, 255, 255), "%s", music[NowMusicNum].name);
 }
 
 // 音楽イメージ画像の変化描画
