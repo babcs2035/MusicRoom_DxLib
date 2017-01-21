@@ -1,8 +1,9 @@
 #include "DxLib.h"
-#include <Shlwapi.h>
 #include "Keyboard.h"
-#include <string.h>
 #include "Mouse.h"
+#include "Room.h"
+#include <string.h>
+#include <Shlwapi.h>
 #pragma comment(lib, "shlwapi.lib")
 #define MAX_LOAD_MUSIC			50
 #define MUSIC_COMMENT_HEIGHT	15
