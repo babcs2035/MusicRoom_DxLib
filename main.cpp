@@ -12,7 +12,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	SetWindowSize(640, 640);
 	SetWindowStyleMode(2);
 	SetAlwaysRunFlag(TRUE);
-	SetWaitVSyncFlag(FALSE);
 	if (DxLib_Init() != 0) { return - 1; }
 
 	Room_Init();
