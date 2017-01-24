@@ -17,3 +17,9 @@ void PlayMusic_Update();
 
 // 音楽再生（描画）
 void PlayMusic_Draw();
+
+// 作者＆コメント（更新）
+void CreatorAndComment_Update();
+
+// 作者＆コメント（描画）
+void CreatorAndComment_Draw();
