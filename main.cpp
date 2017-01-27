@@ -3,7 +3,7 @@
 #include "Keyboard.h"
 #include "resource.h"
 
-int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
+int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	SetOutApplicationLogValidFlag(FALSE);
 	ChangeWindowMode(TRUE);
 	SetMainWindowText("MusicRoom v1.0");
@@ -12,7 +12,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	SetWindowSize(640, 640);
 	SetWindowStyleMode(2);
 	SetAlwaysRunFlag(TRUE);
-	if (DxLib_Init() != 0) { return - 1; }
+	if (DxLib_Init() != 0) { return -1; }
 
 	Room_Init();
 	while (ProcessMessage() == 0) {
