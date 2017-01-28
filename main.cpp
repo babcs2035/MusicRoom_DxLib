@@ -10,6 +10,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	SetWindowIconID(IDI_ICON1);
 	SetGraphMode(640, 640, 32);
 	SetWindowSize(640, 640);
+	SetDrawScreen(DX_SCREEN_BACK);
 	SetWindowStyleMode(5);
 	SetAlwaysRunFlag(TRUE);
 	if (DxLib_Init() != 0) { return -1; }
