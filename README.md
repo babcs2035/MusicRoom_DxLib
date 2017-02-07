@@ -1,29 +1,29 @@
-# MusicRoom �`���y�Đ��\�t�g�`
+# MusicRoom ～音楽再生ソフト～
 
-���N�����@
-	�E�uMusicRoom v1.0.exe�v���_�u���N���b�N���N�����Ă��������B
+# 起動方法
+	「MusicRoom v1.0.exe」をダブルクリックし起動してください。
 
-��������@
-	�E���E�L�[�ŉ��y��I�����A�Đ��o�[�ɂ���e��{�^�����N���b�N���邱�ƂŁA
-	�@���y���Đ����邱�Ƃ��ł��܂��B�uNow Loading...�v�ƕ\������Ă���ꍇ�́A
-	�@�ǂݍ��ݒ��ł��̂ŁA��������܂ł��҂����������B
-	�E�I���̓E�B���h�E�E��́~�{�^�����AAlt�L�[��F4�L�[�𓯎������A�܂��̓^�X�N�}�l�[�W���ɂă^�X�N�L�������肢���܂��B
+# 操作方法
+	左右キーで音楽を選択し、再生バーにある各種ボタンをクリックすることで、
+	　音楽を再生することができます。「Now Loading...」と表示されている場合は、
+	　読み込み中ですので、完了するまでお待ちください。
+	終了はウィンドウ右上の×ボタンか、AltキーとF4キーを同時押し、またはタスクマネージャにてタスクキルをお願いします。
 
-�������
-	�EWindows���Ő���ɋN�����܂��B
-	�EWindows 10, Windows Server 2012 R2 Datacenter, Windows Server 2008 R2 Datacenter, Windows 7�œ�����m�F���Ă��܂��B
-	�E�Ȃ��AMacOS���ɂ����Ă͓��ʂȃc�[�����g�p���Ȃ�����N���ł��܂���̂ł����ӂ��������B
-�@
-���Ɛӎ���
-	�E���̃\�t�g�ɂ́A�\�����Ȃ��o�O�E�s����܂܂�Ă���\��������܂��B
-	�E���̃\�t�g�ɂ���Đ������A�����Ȃ镨���I�E���_�I���̑��̑��Q�ɂ��āA��҂͈�ؐӔC�𕉂��܂���B
+# 動作環境
+	・Windows環境で正常に起動します。
+	・Windows 10, Windows Server 2012 R2 Datacenter, Windows Server 2008 R2 Datacenter, Windows 7で動作を確認しています。
+	・なお、MacOS環境においては特別なツールを使用しない限り起動できませんのでご注意ください。
 
-�����쌠�ɂ���
-	�E�z�z�����t�H���_�ɓ�������Ă��鉹�y�E�摜���̒��쌠�́ABwambocos���n�߂Ƃ���e���쌠�҂��������Ă��܂��B
-	�E���Ȃ��Ĕz�z���铙�̒��쌠��N�Q����s�ׂ͋֎~�v���܂��B
-	�E���̃\�t�g�̊J����DX���C�u���������Visual Studio 2015 Update 3���g�p���Ă��܂��B
-	�E�Ȃ����̃\�t�g�̃\�[�X�R�[�h����GitHub��Ō��J���Ă���܂��B�ihttps://github.com/Bwambocos/MusicRoom�j
+# 免責事項
+	・このソフトには、予期しないバグ・不具合が含まれている可能性があります。
+	・このソフトによって生じた、いかなる物理的・精神的その他の損害について、作者は一切責任を負いません。
 
-���o�[�W�������
-	2017.01.28	v1.0	���������[�X
-	2017.01.21	v0.5	���������Ɍ��J
+# 著作権について
+	・配布したフォルダに同梱されている音楽・画像等の著作権は、Bwambocosを始めとする各著作権者が所持しています。
+	・許可なく再配布する等の著作権を侵害する行為は禁止致します。
+	・このソフトの開発にDXライブラリおよびVisual Studio 2015 Update 3を使用しています。
+	・なおこのソフトのソースコード等をGitHub上で公開しております。（https://github.com/Bwambocos/MusicRoom）
+
+# バージョン情報
+	2017.01.28	v1.0	正式リリース
+	2017.01.21	v0.5	部員向けに公開
