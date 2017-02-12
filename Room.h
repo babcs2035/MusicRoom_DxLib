@@ -10,7 +10,7 @@ void Room_Update();
 void Room_Draw();
 
 // 音楽イメージ画像の変化描画
-void ChangeMusicImageGraph();
+void ChangeMusicImageGraph(int toward);
 
 // 音楽再生（更新）
 void PlayMusic_Update();
