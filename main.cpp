@@ -6,7 +6,7 @@
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	SetOutApplicationLogValidFlag(FALSE);
 	ChangeWindowMode(TRUE);
-	SetMainWindowText("MusicRoom v1.0");
+	SetMainWindowText("MusicRoom v1.5");
 	SetWindowIconID(IDI_ICON1);
 	SetGraphMode(640, 640, 32);
 	SetWindowSize(640, 640);
